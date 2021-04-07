@@ -14,7 +14,7 @@ Nastepnie wysylane jest zapytanie `POST /login/verify` z rozszyfrowanym (lub nie
 Uzytkownik wysyla puste zapytanie `POST /chat/new`. W odpowiedzi dostaje id nowego pokoju (base58, 8 znakow).
 
 # Dolaczenie do pokoju
-Uzyszkodnik wysyla zapytanie `POST /chat/join`, podaje identyfikator pokoju do ktorego chce dolaczyc. Administrator pokoju wybiera czy zezwolic czy nie. Jezeli tak, w odpowiedzi rzucamy dane pokoju (sprostuje pozniej), aktualizujemy stan pokoju. Jezeli nie - rzucamy 403.
+Uzyszkodnik wysyla zapytanie `POST /chat/join`, podaje identyfikator pokoju do ktorego chce dolaczyc. Administrator pokoju wybiera czy zezwolic czy nie.
 
 # Akceptacja nowych uzytkownikow w pokojach
 Administrator pokoju wysyla zapytanie `POST /chat/:id/accept` (`:id` to identyfikator pokoju) i podaje, czy zaakceptowal czy nie
