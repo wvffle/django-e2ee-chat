@@ -1,5 +1,7 @@
-import WindiCSS from 'vite-plugin-windicss'
 import { resolve } from 'path'
+
+import WindiCSS from 'vite-plugin-windicss'
+import liveReload from 'vite-plugin-live-reload'
 
 export default {
     build: {
@@ -13,7 +15,8 @@ export default {
         assetsDir:  'chat',
     },
     plugins: [
-        WindiCSS()
+        WindiCSS(),
+        liveReload('./**/*.py')
     ],
     server: {
         port: 3001,
