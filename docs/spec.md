@@ -9,7 +9,7 @@ Frontend przechwytuje string i stara sie go rozszyfrowac uzywajac klucza prywatn
 
 **⚠ ⚠ ⚠ OD TEGO MOMENTU WSZYSTKIE ZAPYTANIA/ODPOWIEDZI SA SZYFROWANE KLUCZEM SESYJNYM (AES) ⚠ ⚠ ⚠️**
 
-Nastepnie wysylane jest zapytanie `POST /login/verify` z rozszyfrowanym (lub nie) strigniem, serwer sprawdza czy przeslany klucz autentykacyjny jest w cache. Jezeli tak, zwracamy pozytywna odpowiedz, jezeli nie - rzucamy bledem 403.
+Nastepnie wysylane jest zapytanie `POST /login/verify` z rozszyfrowanym strigniem, serwer sprawdza czy przeslany klucz autentykacyjny jest w cache. Jezeli tak, zwracamy pozytywna odpowiedz, jezeli nie - rzucamy bledem 403.
 
 
 # Nowy pokoj
