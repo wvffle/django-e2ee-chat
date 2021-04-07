@@ -1,0 +1,9 @@
+{
+	"rules": {
+		"type-enum": [
+			2,
+			"always",
+			["fix", "feat", "docs", "style", "refactor", "perf", "test", "build", "ci"]
+		]
+	}
+}
