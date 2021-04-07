@@ -37,8 +37,6 @@ Nastepujace kody bledow powinny miec globalne handlery: **500**, **404**, **405*
 ### Zapytanie
 ```json5
 {
-  "publicKey": "....",
-  // lub
   "id": "...."
 }
 ```
@@ -47,6 +45,7 @@ Nastepujace kody bledow powinny miec globalne handlery: **500**, **404**, **405*
 ```json5
 {
   "sessionKey": "....",
+  "authKey": "....",
   "success": true
 }
 ```
@@ -59,7 +58,7 @@ Nastepujace kody bledow powinny miec globalne handlery: **500**, **404**, **405*
 ### Zapytanie
 ```json5
 {
-  "key": "...."
+  "authKey": "...."
 }
 ```
 

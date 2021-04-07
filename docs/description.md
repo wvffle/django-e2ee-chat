@@ -4,10 +4,12 @@ User wysyla request `POST /register` z kluczem publicznym oraz captcha, serwer g
 # Logowanie
 Uzytkownik wrzuca swoje klucze prywatne i publiczne do frontednu.
 
-Frontend wysyla zapytanie `POST /login` z kluczem publicznym lub identyfikatorem, jezeli klucza nie ma w bazie - rzucamy 401, jezeli klucz jest zbanowany rzucamy 403. Jezeli wszystko jest okej, generujemy losowy string (base54, 8 znakow), zapisujemy go w cache na 15 minut, szyfrujemy kluczem publicznym uzytkownika i nastepnie wysylamy zaszyfrowany string w odpowiedzi.
+Frontend wysyla zapytanie `POST /login` z identyfikatorem. Jezeli klucza nie ma w bazie - rzucamy 401, jezeli klucz jest zbanowany rzucamy 403. Jezeli wszystko jest okej - generujemy na serwerze klucz sesji (AES), zapisujemy go w modelu usera, po czym szyfrujemy kluczem publicznym uzytkownika wraz z losowym stringiem (32 znaki, base58) i nastepnie wysylamy zaszyfrowane stringi w odpowiedzi. Zapisujemy losowy string (klucz autentykacyjny) w cache na 15 min.
 Frontend przechwytuje string i stara sie go rozszyfrowac uzywajac klucza prywatnego.
 
-Nastepnie wysylane jest zapytanie `POST /login/verify` z rozszyfrowanym (lub nie) strigniem, serwer sprawdza czy przeslany string jest w cache. Jezeli tak, zwracamy pozytywna odpowiedz, jezeli nie - rzucamy bledem 403.
+**⚠ ⚠ ⚠ OD TEGO MOMENTU WSZYSTKIE ZAPYTANIA/ODPOWIEDZI SA SZYFROWANE KLUCZEM SESYJNYM (AES) ⚠ ⚠ ⚠️**
+
+Nastepnie wysylane jest zapytanie `POST /login/verify` z rozszyfrowanym (lub nie) strigniem, serwer sprawdza czy przeslany klucz autentykacyjny jest w cache. Jezeli tak, zwracamy pozytywna odpowiedz, jezeli nie - rzucamy bledem 403.
 
 
 # Nowy pokoj
