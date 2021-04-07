@@ -1,0 +1,17 @@
+{
+  "name": "django_chat",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:wvffle/django-chat.git",
+  "author": "Kasper Seweryn <github@wvffle.net>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "vite": "^2.1.5",
+    "vite-plugin-windicss": "^0.12.5"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  }
+}
