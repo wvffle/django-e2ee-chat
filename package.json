@@ -12,10 +12,11 @@
     "vite-plugin-windicss": "^0.12.5"
   },
   "scripts": {
-    "dev": "npm-run-all --parallel dev:vite backend",
+    "dev": "npm-run-all --parallel dev:vite start",
     "dev:vite": "vite",
     "build": "vite build",
-    "backend": "python manage.py runserver"
+    "start": "python manage.py runserver",
+    "install": "pre-commit install --hook-type commit-msg --hook-type pre-commit"
   },
   "dependencies": {
     "vite-plugin-live-reload": "^2.1.0"

@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "django_e2ee_chat"
+version = "1.0.0"
+description = ""
+authors = ["Kasper Seweryn <github@wvffle.net>"]
+license = "WTFPL"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+Django = "^3.2"
+
+[tool.poetry.dev-dependencies]
+commitizen = "^2.17.0"
+pre-commit = "^2.12.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
