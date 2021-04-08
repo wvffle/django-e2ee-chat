@@ -5,6 +5,7 @@ services:
     image: nikolaik/python-nodejs:python3.9-nodejs15-alpine
     working_dir: /app
     entrypoint: ./development.sh
+    restart: on-failure
     environment:
       - NODE_ENV=development
       - DJANGO_ENV=development

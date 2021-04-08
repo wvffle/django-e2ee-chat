@@ -15,7 +15,7 @@
     "dev": "npm-run-all --parallel dev:vite start",
     "dev:vite": "vite",
     "build": "vite build",
-    "start": "python manage.py runserver"
+    "start": "python manage.py runserver 0.0.0.0:8000"
   },
   "dependencies": {
     "vite-plugin-live-reload": "^2.1.0"

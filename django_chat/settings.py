@@ -26,8 +26,10 @@ SECRET_KEY = env("DJANGO_SECRET_KEY", default="&2zx2#121r7h-b%j-wx(8-p+^52nqslk1
 DEBUG = env("DJANGO_ENV", default="production") == "development"
 
 ALLOWED_HOSTS = [
-    env('DJANGO_ALLOWED_HOST', default='http://localhost')
+    env('DJANGO_ALLOWED_HOST', default=None)
 ]
+
+ALLOWED_HOSTS = [host for host in ALLOWED_HOSTS if host is not None]
 
 
 # Application definition
