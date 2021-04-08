@@ -21,9 +21,6 @@ Uzyszkodnik wysyla zapytanie `POST /chat/join`, podaje identyfikator pokoju do k
 # Akceptacja nowych uzytkownikow w pokojach
 Administrator pokoju wysyla zapytanie `POST /chat/:id/accept` (`:id` to identyfikator pokoju) i podaje, czy zaakceptowal czy nie
 
-# Pollowanie powiadomien o zmianie stanu
-User wysyla zapytanie `GET /state` co 5s, w odpowiedzi dostaje nowy stan.
-
 # Wysylanie wiadomosci w pokoju
 Uzytkownik wysyla zapytanie `POST /chat/:id/messages` (gdzie `:id` to identyfikator pokoju). I tu zaczyna sie jazda.
 

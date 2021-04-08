@@ -2,33 +2,32 @@ django-e2ee-chat
 ---
 
 # Requirements
-- nodejs
-- yarn
-- poetry
+- docker
+- docker-compose
 
-# Installing dependencies
-It's mandatory that you install python dependencies before node dependencies.
-```shell
-poetry install
-yarn install
-```
+# Production
+## docker-compose.yml
+```yaml
+version: '3'
 
-# Building
-```shell
-yarn build
-```
-
-# Running
-```shell
-yarn start
+services:
+  django-e2ee-chat:
+    build: https://github.com/wvffle/django-e2ee-chat.git
+    environment:
+      - DJANGO_APP_SECRET="some-strong-secret"
+      - DJANGO_ALLOWED_HOST="https://chat.example.com"
+    ports:
+      - 80:8080
 ```
 
 # Development
 ```shell
-yarn dev
+git clone https://github.com/wvffle/django-e2ee-chat.git
+cd django-e2ee-chat
+docker-compose up -d
 ```
 
-## PyCharm configuration
+## Suggested PyCharm configuration
 1. Install following plugins:
 ```md
 # Development

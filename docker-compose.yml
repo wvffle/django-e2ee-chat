@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  e2ee-dev:
+    image: nikolaik/python-nodejs:python3.9-nodejs15-alpine
+    working_dir: /app
+#    init: true
+    entrypoint: ./development.sh
+    environment:
+      - NODE_ENV=development
+      - DJANGO_ENV=development
+    volumes:
+      - .:/app
+    ports:
+      - 3001:3001
+      - 8000:8000

@@ -15,8 +15,7 @@
     "dev": "npm-run-all --parallel dev:vite start",
     "dev:vite": "vite",
     "build": "vite build",
-    "start": "python manage.py runserver",
-    "install": "pre-commit install --hook-type commit-msg --hook-type pre-commit"
+    "start": "python manage.py runserver"
   },
   "dependencies": {
     "vite-plugin-live-reload": "^2.1.0"
