@@ -251,6 +251,9 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+# Idea files
+.idea/vcs.xml
+
 # Build files
 chat/static/chat/*
 !chat/static/chat/.gitkeep

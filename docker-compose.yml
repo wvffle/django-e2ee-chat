@@ -4,7 +4,6 @@ services:
   e2ee-dev:
     image: nikolaik/python-nodejs:python3.9-nodejs15-alpine
     working_dir: /app
-#    init: true
     entrypoint: ./development.sh
     environment:
       - NODE_ENV=development
