@@ -54,3 +54,4 @@ docker-compose up -d
 3. Set project environment to Poetry environment
 4. Restart PyCharm
 5. Run `poetry install` in PyCharm terminal
+6. Run `poetry run pre-commit install --hook-type commit-msg --hook-type pre-commit`
