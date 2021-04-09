@@ -1,11 +1,11 @@
 django-e2ee-chat
 ---
 
-# Requirements
+# Production
+## Requirements
 - docker
 - docker-compose
 
-# Production
 ## docker-compose.yml
 ```yaml
 version: '3'
@@ -13,6 +13,7 @@ version: '3'
 services:
   django-e2ee-chat:
     build: https://github.com/wvffle/django-e2ee-chat.git
+    restart: on-failure
     environment:
       - DJANGO_APP_SECRET="some-strong-secret"
       - DJANGO_ALLOWED_HOST="https://chat.example.com"
@@ -21,6 +22,12 @@ services:
 ```
 
 # Development
+## Requirements
+- docker
+- docker-compose
+- pypoetry
+
+Run following commands and navigate to http://localhost:8000
 ```shell
 git clone https://github.com/wvffle/django-e2ee-chat.git
 cd django-e2ee-chat
@@ -45,3 +52,5 @@ docker-compose up -d
 ```
 2. Create a new python environment (Poetry environment)
 3. Set project environment to Poetry environment
+4. Restart PyCharm
+5. Run `poetry install` in PyCharm terminal

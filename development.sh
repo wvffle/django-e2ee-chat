@@ -11,4 +11,4 @@ if [ ! `command -v git` ]; then
 fi
 poetry run pre-commit install --hook-type commit-msg --hook-type pre-commit
 
-exec poetry run yarn dev
+exec yarn dev

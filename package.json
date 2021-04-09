@@ -8,16 +8,16 @@
   "private": true,
   "devDependencies": {
     "npm-run-all": "^4.1.5",
+    "onchange": "^7.1.0",
     "vite": "^2.1.5",
+    "vite-plugin-live-reload": "^2.1.0",
     "vite-plugin-windicss": "^0.12.5"
   },
   "scripts": {
-    "dev": "npm-run-all --parallel dev:vite start",
-    "dev:vite": "vite",
+    "dev": "npm-run-all --parallel vite start poetry:watch",
     "build": "vite build",
-    "start": "python manage.py runserver 0.0.0.0:8000"
-  },
-  "dependencies": {
-    "vite-plugin-live-reload": "^2.1.0"
+    "vite": "vite",
+    "start": "poetry run python manage.py runserver 0.0.0.0:8000",
+    "poetry:watch": "onchange -k 'pyproject.toml' -- poetry install"
   }
 }
