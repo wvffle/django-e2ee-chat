@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from chat.models import Profile, Invite
+from chat.models import Profile, Invite, Ban
 
 
 class InviteForm(forms.ModelForm):
@@ -21,3 +21,4 @@ admin.site.register(Invite, InviteAdmin)
 # TODO: Make Profile readonly
 # TODO: Hide public key and session key
 admin.site.register(Profile)
+admin.site.register(Ban)
