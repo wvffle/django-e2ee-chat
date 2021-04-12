@@ -1,5 +1,7 @@
 # Bledy
-Wszystkie bledy zwracane przez API powinny byc w ponizszym formacie
+Wszystkie bledy zwracane przez API (header `Accept: application/json`) powinny byc w ponizszym formacie.
+
+W przypadku bledow, gdy nie jest to zapytanie API, powinien byc renderowany plik `chat/index.html` z contextem `{ error: True, message: "...", statusCode: 500 }`.
 
 Nastepujace kody bledow powinny miec globalne handlery: **500**, **404**, **405**, **418**
 ### Odpowiedz
