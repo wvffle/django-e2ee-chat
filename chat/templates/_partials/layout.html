@@ -7,9 +7,18 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         {% vite_styles 'main.js' %}
     </head>
-    <body>
+    <body id="app">
         {% block content %}
         {% endblock %}
+
+        {% if error is True %}
+        <script>
+          window.__DJANGO_ERROR__ = {
+            status: {{ statusCode }},
+          message: `{{ message }}`
+          }
+        </script>
+        {% endif %}
         {% vite_scripts 'main.js' %}
     </body>
 </html>

@@ -5,7 +5,11 @@ from chat.serializers import ProfileSerializer, InviteSerializer
 
 
 def index(request):
-    return render(request, 'chat/index.html', context={})
+    return render(request, 'chat/index.html', context={
+        # 'error': True,
+        # 'statusCode': 500,
+        # 'message': 'test message'
+    })
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
