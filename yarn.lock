@@ -113,7 +113,7 @@
     "@vue/compiler-core" "3.0.11"
     "@vue/shared" "3.0.11"
 
-"@vue/compiler-sfc@^3.0.11":
+"@vue/compiler-sfc@^3.0.11", "@vue/compiler-sfc@^3.0.5":
   version "3.0.11"
   resolved "https://registry.yarnpkg.com/@vue/compiler-sfc/-/compiler-sfc-3.0.11.tgz#cd8ca2154b88967b521f5ad3b10f5f8b6b665679"
   integrity sha512-7fNiZuCecRleiyVGUWNa6pn8fB2fnuJU+3AGjbjl7r1P5wBivfl02H4pG+2aJP5gh2u+0wXov1W38tfWOphsXw==
@@ -2183,6 +2183,13 @@ vite-plugin-windicss@^0.12.5:
     debug "^4.3.2"
     windicss "^2.5.11"
 
+vite-svg-loader@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/vite-svg-loader/-/vite-svg-loader-1.5.1.tgz#90f8fc079ff6651d7be11e07714fbe2dbab9f346"
+  integrity sha512-ps06bbNYm5oaxr8FIW2xI36jjqpqoj/q7SYZoKAnxs1BXeBTQU+MA4Xvpg6WhHbupyDRDL/MCWnRCqWaIhyqGA==
+  dependencies:
+    "@vue/compiler-sfc" "^3.0.5"
+
 vite@^2.1.5:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/vite/-/vite-2.1.5.tgz#4857da441c62f7982c83cbd5f42a00330f20c9c1"
@@ -2238,6 +2245,11 @@ windicss@^2.5.11:
   version "2.5.11"
   resolved "https://registry.yarnpkg.com/windicss/-/windicss-2.5.11.tgz#dd4027c724c7b12a37746d1474b96a52239157d1"
   integrity sha512-u7b4rOPb8MwO1glkf0gdDygZ+lIzXb/PYLNjqni5Fe2684DCEt6dWTKdk3iMxXgbKoqRNncKu7xt3pFwXHdSAw==
+
+windicss@^2.5.14:
+  version "2.5.14"
+  resolved "https://registry.yarnpkg.com/windicss/-/windicss-2.5.14.tgz#41236ccc2517c0947e1adb69e0d5e8aa9bed9c1e"
+  integrity sha512-8Lm7U1M5AzJPbiaVSVz7qWdETRzlkv//5LBMICBBAojos1jo09lUGhNZ5rBzHeldB9JmqYMDOGgrrXHExu0EAg==
 
 word-wrap@^1.2.3:
   version "1.2.3"
