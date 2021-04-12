@@ -18,7 +18,7 @@ class InviteAdmin(admin.ModelAdmin):
 
 admin.site.register(Invite, InviteAdmin)
 
-# TODO: Make Profile readonly
-# TODO: Hide public key and session key
+# TODO [$6073b33e0ec279062172ac28]: Make Profile readonly
+# TODO [$6073b33e0ec279062172ac29]: Hide public key and session key
 admin.site.register(Profile)
 admin.site.register(Ban)
