@@ -1,7 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 
 
 class Invite(models.Model):
@@ -13,15 +11,6 @@ class Profile(models.Model):
     name = models.CharField(max_length=8)
     session_key = models.CharField(max_length=32)
     public_key = models.CharField(max_length=1024)
-
-    @receiver(post_save, sender=User)
-    def create_user_profile(self, instance, created, **kwargs):
-        if created:
-            Profile.objects.create(user=instance)
-
-    @receiver(post_save, sender=User)
-    def save_user_profile(self, instance, **kwargs):
-        instance.profile.save()
 
 
 class Room(models.Model):
@@ -37,4 +26,4 @@ class Message(models.Model):
 
 class Ban(models.Model):
     invite = models.OneToOneField(Invite, on_delete=models.CASCADE, null=True, blank=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=True)
