@@ -26,6 +26,7 @@
     "poetry:watch": "onchange -k 'pyproject.toml' -- poetry install"
   },
   "dependencies": {
+    "@bachdgvn/vue-otp-input": "^1.0.8",
     "vue": "^3.0.11",
     "vue-router": "^4.0.6"
   }

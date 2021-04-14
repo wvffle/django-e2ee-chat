@@ -1,25 +1,46 @@
 <template>
-  <div class="grid grid-cols-2 bg-pink-400">
-    <div></div>
-    <div class="flex items-center justify-center">
-      <unlock-svg></unlock-svg>
+  <div class="grid grid-cols-2 h-screen">
+    <div class="bg-pink-600 flex items-center justify-center">
+      <div class="bg-white rounded py-4 shadow-lg max-w-md w-full">
+        <h1 class="text-2xl pb-2 px-8 border-b border-gray-200">Wpisz kod z zaproszenia</h1>
+        <p class="text-lg pt-4 px-8">Aby rozpocząć korzystanie z aplikacji, podaj kod z zaproszenia.</p>
+        <div class="px-8 pt-4">
+          <invite-input v-model:value="invite" />
+          <div class="flex pt-8">
+            <div class="ml-auto">
+              <waff-button>Zarejestruj się</waff-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-center relative">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 1440" class="absolute left-0 top-0 h-full transform -translate-x-1/2">
+        <rect fill="#ffffff" height="1440" id="svg_2" stroke="#000000" stroke-width="0" width="140" x="0" y="0"/>
+        <path d="m-649.85052,713.85052l120,21.3c120,21.7 360,63.7 600,53.4c240,-10.7 480,-74.7 600,-106.7l120,-32l0,0l-120,0c-120,0 -360,0 -600,0c-240,0 -480,0 -600,0l-120,0l0,64z" fill="#db2777" id="svg_1" transform="rotate(-90, 70.1495, 720)"/>
+      </svg>
+      <unlock-svg class="w-7/9" />
     </div>
   </div>
 </template>
 
 <script>
 import UnlockSvg from '../../public/images/undraw_unlock_24mb.svg'
+import InviteInput from '../components/InviteInput.vue'
+import WaffButton from '../components/WaffButton.vue'
+import { ref } from 'vue'
 export default {
   name: 'Register',
 
   components: {
-    UnlockSvg
+    InviteInput,
+    UnlockSvg,
+    WaffButton
   },
 
   setup () {
-    return {
-
-    }
+    const invite = ref('')
+    return { invite }
   }
 }
 </script>
