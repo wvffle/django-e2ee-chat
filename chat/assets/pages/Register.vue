@@ -18,6 +18,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 1440" class="absolute left-0 top-0 h-full transform -translate-x-1/2">
         <rect fill="#ffffff" height="1440" id="svg_2" stroke="#000000" stroke-width="0" width="140" x="0" y="0"/>
         <path d="m-649.85052,713.85052l120,21.3c120,21.7 360,63.7 600,53.4c240,-10.7 480,-74.7 600,-106.7l120,-32l0,0l-120,0c-120,0 -360,0 -600,0c-240,0 -480,0 -600,0l-120,0l0,64z" fill="#db2777" id="svg_1" transform="rotate(-90, 70.1495, 720)"/>
+        <line stroke-width="2" stroke="#db2777" x1="0" x2="0" y1="0" y2="1440" />
       </svg>
       <unlock-svg class="w-7/9" />
     </div>

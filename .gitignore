@@ -253,6 +253,8 @@ dist
 
 # Idea files
 .idea/vcs.xml
+.idea/django_chat.iml
+.idea/misc.xml
 
 # Build files
 chat/static/chat/*
