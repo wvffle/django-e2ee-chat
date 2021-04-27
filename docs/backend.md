@@ -19,6 +19,7 @@ Nastepujace kody bledow powinny miec globalne handlery: **500**, **404**, **405*
 ```json5
 {
   "publicKey": "....",
+  "invite": "....",
   "hcaptcha": "...."
 }
 ```
@@ -26,7 +27,7 @@ Nastepujace kody bledow powinny miec globalne handlery: **500**, **404**, **405*
 ### Odpowiedz
 ```json5
 {
-  "id": "...",
+  "name": "...",
   "success": true
 }
 ```

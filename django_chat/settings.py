@@ -14,6 +14,7 @@ from pathlib import Path
 import environ
 
 env = environ.Env()
+env.read_env('.env')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,6 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="&2zx2#121r7h-b%j-wx(8-p+^52nqslk1_lctu(wn1gz%##!h7")
+HCAPTCHA_SECRET = env("HCAPTCHA_SECRET", default="")
 DEBUG = env("DJANGO_ENV", default="production") == "development"
 
 ALLOWED_HOSTS = [

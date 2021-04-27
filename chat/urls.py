@@ -5,8 +5,10 @@ from chat import views
 from django_chat.settings import DEBUG
 
 router = routers.DefaultRouter()
-router.register(r'profiles', views.ProfileViewSet)
-router.register(r'invites', views.InviteViewSet)
+router.register(r'v1/profiles', views.ProfileViewSet)
+router.register(r'v1/invites', views.InviteViewSet)
+router.register(r'v1/register', views.RegisterViewSet, basename='v1/register')
+router.register(r'v1/login', views.LoginViewSet, basename='v1/login')
 
 urlpatterns = [
     path('', views.index, name='index'),

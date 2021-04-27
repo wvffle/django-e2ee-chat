@@ -1,5 +1,5 @@
 # Rejestracja
-User wysyla request `POST /register` z kluczem publicznym oraz captcha, serwer generuje losowy identyfikator (base58, 8 znakow) i zapisuje w bazie danych, ze ten identyfikator to ten klucz publiczny. Nastepnie zwraca odpowiedz.
+User wysyla request `POST /register` z kluczem publicznym, kodem zaproszenia oraz captcha, serwer generuje losowy identyfikator (base58, 8 znakow) i zapisuje w bazie danych, ze ten identyfikator to ten klucz publiczny. Nastepnie zwraca odpowiedz.
 
 # Logowanie
 Uzytkownik wrzuca swoje klucze prywatne i publiczne do frontednu.
