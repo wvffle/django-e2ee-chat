@@ -6,10 +6,14 @@
         <p class="text-lg pt-4 px-8">Aby rozpocząć korzystanie z aplikacji, podaj kod z zaproszenia.</p>
         <div class="px-8 pt-4">
           <invite-input v-model:value="invite" />
-          <div class="flex pt-8">
-            <div class="ml-auto">
-              <waff-button>Zarejestruj się</waff-button>
-            </div>
+          <div class="flex justify-center pt-8">
+            <h-captcha
+                sitekey="69ec32bd-a362-4ef1-907e-edb7c071f3fd"
+                @verify="captchaVerify"
+            />
+          </div>
+          <div class="flex pt-8 justify-center">
+            <waff-button @click="register">Zarejestruj się</waff-button>
           </div>
         </div>
       </div>
@@ -20,28 +24,42 @@
         <path d="m-649.85052,713.85052l120,21.3c120,21.7 360,63.7 600,53.4c240,-10.7 480,-74.7 600,-106.7l120,-32l0,0l-120,0c-120,0 -360,0 -600,0c-240,0 -480,0 -600,0l-120,0l0,64z" fill="#db2777" id="svg_1" transform="rotate(-90, 70.1495, 720)"/>
         <line stroke-width="2" stroke="#db2777" x1="0" x2="0" y1="0" y2="1440" />
       </svg>
-      <unlock-svg class="w-7/9" />
+      <undraw-unlock class="w-7/9" />
     </div>
   </div>
 </template>
 
 <script>
-import UnlockSvg from '../../public/images/undraw_unlock_24mb.svg'
-import InviteInput from '../components/InviteInput.vue'
-import WaffButton from '../components/WaffButton.vue'
+import HCaptcha from '@jdinabox/vue-3-hcaptcha'
 import { ref } from 'vue'
+import axios from 'axios'
+
 export default {
   name: 'Register',
 
   components: {
-    InviteInput,
-    UnlockSvg,
-    WaffButton
+    HCaptcha
   },
 
   setup () {
     const invite = ref('')
-    return { invite }
+    const captcha = ref(null)
+
+    const captchaVerify = token => {
+      captcha.value = token
+    }
+
+    const register = async () => {
+      const res = await axios.post('/api/v1/register/', {
+        public_key: 'asd' + Math.random(),
+        hcaptcha: captcha.value,
+        invite: invite.value,
+      })
+
+      console.log(res)
+    }
+
+    return { invite, register, captchaVerify }
   }
 }
 </script>

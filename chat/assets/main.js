@@ -19,5 +19,8 @@ if (process.env.NODE_ENV !== 'production' && '__VUE_DEVTOOLS_GLOBAL_HOOK__' in w
   // window.__VUE_DEVTOOLS_GLOBAL_HOOK__.Vue = app
 }
 
+// vue2-undraw color
+app.config.globalProperties.$vueUndrawColor = '#db2777'
+
 app.use(router)
 app.mount('#app')

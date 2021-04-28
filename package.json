@@ -7,12 +7,15 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "@iconify/json": "^1.1.334",
     "@vitejs/plugin-vue": "^1.2.1",
     "@vue/compiler-sfc": "^3.0.11",
     "npm-run-all": "^4.1.5",
     "onchange": "^7.1.0",
     "standard": "^16.0.3",
     "vite": "^2.1.5",
+    "vite-plugin-components": "^0.8.4",
+    "vite-plugin-icons": "^0.5.0",
     "vite-plugin-live-reload": "^2.1.0",
     "vite-plugin-windicss": "^0.12.5",
     "vite-svg-loader": "^1.5.1",
@@ -26,8 +29,13 @@
     "poetry:watch": "onchange -k 'pyproject.toml' -- poetry install"
   },
   "dependencies": {
-    "@bachdgvn/vue-otp-input": "^1.0.8",
+    "@jdinabox/vue-3-hcaptcha": "^0.1.1",
+    "@webcrypto/storage": "^2.0.2",
+    "axios": "^0.21.1",
+    "pkijs": "^2.1.95",
     "vue": "^3.0.11",
-    "vue-router": "^4.0.6"
+    "vue-router": "^4.0.6",
+    "vue2-undraw": "^0.3.1",
+    "vue3-click-away": "^1.2.1"
   }
 }

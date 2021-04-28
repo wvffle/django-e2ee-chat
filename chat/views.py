@@ -25,12 +25,11 @@ class RegisterViewSet(viewsets.GenericViewSet):
     serializer_class = RegisterSerializer
 
     def create(self, request, pk=None):
-        if 'invite' not in request.data or 'public_key' not in request.data or request.data['invite'] == '' or request.data['public_key'] == ''  or request.data['hcaptcha'] == '' or request.data['hcaptcha'] == '':
+        if 'invite' not in request.data or 'public_key' not in request.data or request.data['invite'] == '' or request.data['public_key'] == ''  or 'hcaptcha' not in request.data or request.data['hcaptcha'] == '':
             return Response({
                 'success': False,
-                'message': 'Pola `public_key` oraz `invite` sa wymagane.'
+                'message': 'Pola `hcaptcha`, `public_key` oraz `invite` sa wymagane.'
             }, status=400)
-
 
         if HCAPTCHA_SECRET is not "":
             request = Request('https://hcaptcha.com/siteverify', urlencode({
@@ -38,8 +37,8 @@ class RegisterViewSet(viewsets.GenericViewSet):
                 'response': request.data['hcaptcha']
             }).encode())
 
-            data = json.loads(urlopen(request).read().decode())
-            if data['success'] is False:
+            hcaptcha_data = json.loads(urlopen(request).read().decode())
+            if hcaptcha_data['success'] is False:
                 return Response({
                     'success': False,
                     'message': 'Niepoprawna captcha.'
@@ -60,18 +59,17 @@ class RegisterViewSet(viewsets.GenericViewSet):
                 }, status=403)
 
         name = base58.random(8)
-        # profile = Profile(
-        #     invite=query.get(),
-        #     public_key=request.data['public_key'],
-        #     name=name,
-        # )
-        #
-        # profile.save()
+        profile = Profile(
+            invite=query.get(),
+            public_key=request.data['public_key'],
+            name=name,
+        )
+
+        profile.save()
 
         return Response({
             'name': name,
             'success': True,
-            'meh': HCAPTCHA_SECRET[:5]
         })
 
 
