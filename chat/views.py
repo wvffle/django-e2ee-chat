@@ -83,13 +83,29 @@ class LoginViewSet(viewsets.GenericViewSet):
         return Response(id)
 
     def create(self, request, pk=None):
-        # answer = {
-        #     'sessionKey': "....",
-        #     'authKey': "....",
-        #     'success': True,
-        # }
-        return Response({"test": request.data['id']})
+        if 'id' not in request.data or request.data['id'] == '':
+            return Response({
+                'message':'Klucza nie ma w bazie.',
+                'success':False
+            }, status=401)
 
+        if 'id' in request.data:
+            return Response({
+                'message': 'Klucz zostal zbanowany',
+                'success': False
+            }, status=403)
+
+        profile = Profile(
+            id='id',
+        )
+
+        profile.save()
+
+        return Response({
+            'sessionKey': '...',
+            'authKey': '....',
+            'success': True,
+        })
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all().order_by('name')
