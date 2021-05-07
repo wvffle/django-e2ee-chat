@@ -11,6 +11,9 @@ Frontend przechwytuje string i stara sie go rozszyfrowac uzywajac klucza prywatn
 
 Nastepnie wysylane jest zapytanie `POST /login/verify` z rozszyfrowanym strigniem, serwer sprawdza czy przeslany klucz autentykacyjny jest w cache. Jezeli tak, zwracamy pozytywna odpowiedz, jezeli nie - rzucamy bledem 403.
 
+Pomocne linki:
+- https://www.pycryptodome.org/en/latest/src/examples.html#encrypt-data-with-rsa
+
 
 # Nowy pokoj
 Uzytkownik wysyla puste zapytanie `POST /chat/new`. W odpowiedzi dostaje id nowego pokoju (base58, 8 znakow).

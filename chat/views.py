@@ -1,5 +1,11 @@
 import json
 
+from django.core.cache import cache
+
+from Crypto.PublicKey import RSA
+from Crypto.Random import get_random_bytes
+from Crypto.Cipher import AES, PKCS1_OAEP
+
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -9,7 +15,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from chat.utils import base58
-from chat.models import Profile, Invite
+from chat.models import Profile, Invite, Ban
 from chat.serializers import ProfileSerializer, InviteSerializer, RegisterSerializer, LoginSerializer
 
 
@@ -31,7 +37,7 @@ class RegisterViewSet(viewsets.GenericViewSet):
                 'message': 'Pola `hcaptcha`, `public_key` oraz `invite` sa wymagane.'
             }, status=400)
 
-        if HCAPTCHA_SECRET is not "":
+        if HCAPTCHA_SECRET != "":
             request = Request('https://hcaptcha.com/siteverify', urlencode({
                 'secret': HCAPTCHA_SECRET,
                 'response': request.data['hcaptcha']
@@ -51,6 +57,13 @@ class RegisterViewSet(viewsets.GenericViewSet):
                 'message': 'Zaproszenie nie istnieje.'
             }, status=400)
 
+        invite = query.get()
+        if Ban.objects.filter(invite=invite).exists():
+            return Response({
+                'success': False,
+                'message': 'Zaproszenie jest zablokowane.'
+            }, status=400)
+
         for profile in Profile.objects.all():
             if profile.public_key == request.data['public_key']:
                 return Response({
@@ -60,7 +73,7 @@ class RegisterViewSet(viewsets.GenericViewSet):
 
         name = base58.random(8)
         profile = Profile(
-            invite=query.get(),
+            invite=invite,
             public_key=request.data['public_key'],
             name=name,
         )
@@ -83,29 +96,58 @@ class LoginViewSet(viewsets.GenericViewSet):
         return Response(id)
 
     def create(self, request, pk=None):
-        if 'id' not in request.data or request.data['id'] == '':
+        # TODO:zmienione id na name
+        if 'name' not in request.data or request.data['name'] == '':
             return Response({
-                'message':'Klucza nie ma w bazie.',
+                'message':'Uzytkownik nie zostal odnaleziony.',
                 'success':False
             }, status=401)
 
-        if 'id' in request.data:
+        query = Profile.objects.filter(name=request.data['id'])
+        #new
+        if not query.exists():
             return Response({
-                'message': 'Klucz zostal zbanowany',
-                'success': False
-            }, status=403)
+                'success': False,
+                'message': 'Uzytkownik nie istnieje.'
+            }, status=400)
 
-        profile = Profile(
-            id='id',
-        )
 
-        profile.save()
+        profile = query.get()
+        for ban in Ban.objects.all():
+            if ban.is_banned(profile):
+                return Response({
+                    'message': 'Uzytkownik zostal zbanowany',
+                    'success': False
+                }, status=403)
+
+        public_key = RSA.import_key(profile.public_key)
+        cipher_rsa = PKCS1_OAEP.new(public_key)
+
+        session_key = get_random_bytes(32)
+        auth_key = base58.random(32)
+
+
+        # TODO: Sprawdzic czy django ma cos takiego jak cache i zapisac authKey dla usera na 15 min
+        #
+        #       Jezeli nie ma, to dodac pole auth_key i session_started_at do modelu usera
+        #       Nastepnie zapsiac auth_key i aktualna date respektywnie do w/w pol
+        #       Potem przy weryfikacji logowania sprawdzac czy nie minelo 15 minut i czy przeslany authkey sie rowna
+        #       zapisanemu.
+        #       Pozniej usunac zapisany authkey z modelu
+
+        cache.set(auth_key, 60 * 15)
+
+        profile.session_key = session_key
+
+        # TODO: zaszyfrowany auth_key uzywajac klucza sesji.
+        auth_key = cipher_rsa.encrypt(session_key)
 
         return Response({
-            'sessionKey': '...',
-            'authKey': '....',
+            'sessionKey': cipher_rsa.encrypt(session_key),
+            'authKey': cipher_rsa.encrypt(auth_key),
             'success': True,
         })
+
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all().order_by('name')
