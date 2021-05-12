@@ -126,7 +126,7 @@ class LoginViewSet(viewsets.GenericViewSet):
         session_key = get_random_bytes(32)
         auth_key = base58.random(32)
 
-        cache.set(Profile.name.auth_key, auth_key, 60 * 15)
+        cache.set(profile.name + '|auth_key', auth_key, 60 * 15)
 
         profile.session_key = session_key
 
