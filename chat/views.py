@@ -96,7 +96,7 @@ class LoginViewSet(viewsets.GenericViewSet):
         return Response(id)
 
     def create(self, request, pk=None):
-        # TODO:zmienione id na name
+        # TODO [$609b97d420133e06d703813e]:zmienione id na name
         if 'name' not in request.data or request.data['name'] == '':
             return Response({
                 'message':'Uzytkownik nie zostal odnaleziony.',
@@ -130,7 +130,7 @@ class LoginViewSet(viewsets.GenericViewSet):
 
         profile.session_key = session_key
 
-        # TODO: zaszyfrowany auth_key uzywajac klucza sesji.
+        # TODO [$609b97d420133e06d703813f]: zaszyfrowany auth_key uzywajac klucza sesji.
         auth_key = cipher_rsa.encrypt(session_key)
 
         return Response({
