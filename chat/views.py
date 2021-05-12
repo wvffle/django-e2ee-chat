@@ -126,16 +126,7 @@ class LoginViewSet(viewsets.GenericViewSet):
         session_key = get_random_bytes(32)
         auth_key = base58.random(32)
 
-
-        # TODO: Sprawdzic czy django ma cos takiego jak cache i zapisac authKey dla usera na 15 min
-        #
-        #       Jezeli nie ma, to dodac pole auth_key i session_started_at do modelu usera
-        #       Nastepnie zapsiac auth_key i aktualna date respektywnie do w/w pol
-        #       Potem przy weryfikacji logowania sprawdzac czy nie minelo 15 minut i czy przeslany authkey sie rowna
-        #       zapisanemu.
-        #       Pozniej usunac zapisany authkey z modelu
-
-        cache.set(auth_key, 60 * 15)
+        cache.set(Profile.name.auth_key, auth_key, 60 * 15)
 
         profile.session_key = session_key
 

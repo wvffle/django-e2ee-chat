@@ -20,17 +20,25 @@ class RegisterSerializer(serializers.Serializer):
     hcaptcha = serializers.CharField()
 
     def create(self, validated_data):
-        pass
+        return Profile.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        pass
+        for key in list(validated_data):
+            instance[key] = validated_data[key]
+        instance.save()
+        return instance
+
+
 
 
 class LoginSerializer(serializers.Serializer):
     id = serializers.CharField()
 
     def create(self, validated_data):
-        pass
+        return Profile.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        pass
+        for key in list(validated_data):
+            instance[key] = validated_data[key]
+        instance.save()
+        return instance
