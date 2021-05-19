@@ -16,9 +16,19 @@ class InviteAdmin(admin.ModelAdmin):
     form = InviteForm
 
 
-admin.site.register(Invite, InviteAdmin)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'invite')
+    list_filter = ('invite',)
+    search_fields = ('name', 'invite')
+    exclude = ('session_key', 'public_key')
+    readonly_fields = ('name', 'invite')
 
-# TODO [#5]: Make Profile readonly
-# TODO [#6]: Hide public key and session key
-admin.site.register(Profile)
-admin.site.register(Ban)
+
+class BanAdmin(admin.ModelAdmin):
+    list_display = ('invite', 'profile')
+    list_filter = ('invite',)
+
+
+admin.site.register(Invite, InviteAdmin)
+admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Ban, BanAdmin)
