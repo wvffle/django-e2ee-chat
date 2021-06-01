@@ -67,7 +67,7 @@ export default {
       }
 
       await store.set('name', res.name)
-      // TODO: Log into the backend
+      // TODO [$60b6a8bb7b4e2c070666a117]: Log into the backend
     }
 
     return { invite, register, captchaVerify }

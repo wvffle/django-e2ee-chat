@@ -7,7 +7,7 @@
 </template>
 
 <script>
-// TODO: Add loading state
+// TODO [$60b6a8bb7b4e2c070666a116]: Add loading state
 export default {
   name: 'Button',
   props: {

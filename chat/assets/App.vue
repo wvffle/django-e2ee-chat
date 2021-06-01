@@ -59,7 +59,7 @@ export default {
 
       const name = await store.init(cryptoPass.value)
       if (name !== undefined) {
-        // TODO: Log into the backend
+        // TODO [$60b6a8bb7b4e2c070666a114]: Log into the backend
         await axios.post('/api/v1/login')
 
         cryptoPass.value = ''
@@ -69,7 +69,7 @@ export default {
       cryptoPass.value = ''
 
       // NOTE: Register user in the backend
-      // TODO: Redirect to register route
+      // TODO [$60b6a8bb7b4e2c070666a115]: Redirect to register route
     }
 
     return {
