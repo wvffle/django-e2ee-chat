@@ -5,10 +5,12 @@ import App from './App.vue'
 import { createApp, h } from 'vue'
 import router from './router'
 
+import { provideToast } from 'vue-toastification'
+import 'vue-toastification/dist/index.css'
 
 const app = createApp({
   setup: _ => {
-
+    provideToast({ timeout: 3000 })
   },
   render: _ => h(App)
 })

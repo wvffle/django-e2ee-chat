@@ -11,6 +11,7 @@ services:
       - DJANGO_ENV=development
     volumes:
       - .:/app
+      - /app/node_modules
     ports:
       - 3001:3001
       - 8000:8000

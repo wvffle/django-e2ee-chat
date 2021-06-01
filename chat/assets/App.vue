@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { useToast } from 'vue-toastification'
 import { Certificate } from 'pkijs'
 import { ref } from 'vue'
 import useCryptoStore from './utils/cryptoStore'
@@ -45,10 +46,16 @@ import useCryptoStore from './utils/cryptoStore'
 export default {
   name: 'App',
   setup () {
+    const toast = useToast()
     const store = useCryptoStore()
     const cryptoPass = ref('')
 
     const initCrypto = async () => {
+      if (cryptoPass.value === '') {
+        toast.error("Haslo nie moze byc puste.")
+        return
+      }
+
       store.init(cryptoPass.value)
       cryptoPass.value = ''
 
