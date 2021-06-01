@@ -6,6 +6,8 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.templatetags.static import static
 
+from django_chat.settings import DEV_SERVER_ROOT
+
 
 def is_absolute_url(url):
     return re.match("^https?://", url)
@@ -14,8 +16,6 @@ def is_absolute_url(url):
 register = template.Library()
 
 DEV = settings.DEBUG
-DEV_SERVER_ROOT = "http://localhost:3001"
-
 
 def vite_manifest(entries_names):
     app_name = 'chat'

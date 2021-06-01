@@ -9,7 +9,7 @@ import ViteIcons, { ViteIconsResolver } from 'vite-plugin-icons'
 import ViteComponents from 'vite-plugin-components'
 
 export default defineConfig(({
-  base: 'http://localhost:3001/',
+  base: 'https://3001.local.dev/',
   publicDir: 'chat/public',
 
   plugins: [
@@ -52,6 +52,6 @@ export default defineConfig(({
   server: {
     port: 3001,
     open: false,
-    cors: true
+    cors: true,
   }
 }))
