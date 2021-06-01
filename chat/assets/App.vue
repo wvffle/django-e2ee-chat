@@ -41,7 +41,8 @@
 import { useToast } from 'vue-toastification'
 import { Certificate } from 'pkijs'
 import { ref } from 'vue'
-import useCryptoStore from './utils/cryptoStore'
+import useCryptoStore, { abtb64 } from './utils/cryptoStore'
+import axios from 'axios'
 
 export default {
   name: 'App',
@@ -56,19 +57,24 @@ export default {
         return
       }
 
-      store.init(cryptoPass.value)
+      const name = await store.init(cryptoPass.value)
+      if (name !== undefined) {
+        // TODO: Log into the backend
+        await axios.post('/api/v1/login')
+
+        cryptoPass.value = ''
+        return
+      }
+
       cryptoPass.value = ''
 
-      const publicKey = await store.get('publicKey')
-      if (!publicKey) {
-
-      }
+      // NOTE: Register user in the backend
+      // TODO: Redirect to register route
     }
 
     return {
       cryptoPass,
       initCrypto,
-
       cryptoStorageInitialized: store.initialized
     }
   }

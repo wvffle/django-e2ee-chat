@@ -8,6 +8,8 @@
         {% vite_styles 'main.js' %}
     </head>
     <body id="app">
+        {% csrf_token %}
+
         {% block content %}
         {% endblock %}
 

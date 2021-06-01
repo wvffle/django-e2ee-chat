@@ -29,10 +29,8 @@ class RegisterSerializer(serializers.Serializer):
         return instance
 
 
-
-
 class LoginSerializer(serializers.Serializer):
-    id = serializers.CharField()
+    name = serializers.CharField()
 
     def create(self, validated_data):
         return Profile.objects.create(**validated_data)

@@ -7,6 +7,7 @@
 </template>
 
 <script>
+// TODO: Add loading state
 export default {
   name: 'Button',
   props: {

@@ -9,14 +9,16 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from django.template.context_processors import csrf
+
 from django_chat.settings import HCAPTCHA_SECRET
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.response import Response
 
 from chat.utils import base58
-from chat.models import Profile, Invite, Ban
-from chat.serializers import ProfileSerializer, InviteSerializer, RegisterSerializer, LoginSerializer
+from chat.models import Ban
+from chat.serializers import *
 
 
 def index(request):
@@ -31,26 +33,28 @@ class RegisterViewSet(viewsets.GenericViewSet):
     serializer_class = RegisterSerializer
 
     def create(self, request, pk=None):
-        if 'invite' not in request.data or 'public_key' not in request.data or request.data['invite'] == '' or request.data['public_key'] == ''  or 'hcaptcha' not in request.data or request.data['hcaptcha'] == '':
+        if 'invite' not in request.data or 'public_key' not in request.data or request.data['invite'] == '' or \
+                request.data['public_key'] == '' or 'hcaptcha' not in request.data or request.data['hcaptcha'] == '':
             return Response({
                 'success': False,
                 'message': 'Pola `hcaptcha`, `public_key` oraz `invite` sa wymagane.'
             }, status=400)
 
         if HCAPTCHA_SECRET != "":
-            request = Request('https://hcaptcha.com/siteverify', urlencode({
+            hcaptcha_request = Request('https://hcaptcha.com/siteverify', urlencode({
                 'secret': HCAPTCHA_SECRET,
                 'response': request.data['hcaptcha']
             }).encode())
 
-            hcaptcha_data = json.loads(urlopen(request).read().decode())
+            hcaptcha_data = json.loads(urlopen(hcaptcha_request).read().decode())
             if hcaptcha_data['success'] is False:
                 return Response({
                     'success': False,
                     'message': 'Niepoprawna captcha.'
                 }, status=400)
 
-        query = Invite.objects.filter(invite=request.data['invite'])
+        invite_str = request.data['invite']
+        query = Invite.objects.filter(invite=invite_str)
         if not query.exists():
             return Response({
                 'success': False,
@@ -90,27 +94,24 @@ class LoginViewSet(viewsets.GenericViewSet):
     serializer_class = LoginSerializer
 
     def get(self, request, pk=None):
-        id = {
-            'id': base58.random(8),
-        }
-        return Response(id)
+        return Response({
+            'name': base58.random(8),
+        })
 
     def create(self, request, pk=None):
-        # TODO [#9]:zmienione id na name
         if 'name' not in request.data or request.data['name'] == '':
             return Response({
-                'message':'Uzytkownik nie zostal odnaleziony.',
-                'success':False
+                'message': 'Uzytkownik nie zostal odnaleziony.',
+                'success': False
             }, status=401)
 
-        query = Profile.objects.filter(name=request.data['id'])
-        #new
+        query = Profile.objects.filter(name=request.data['name'])
+
         if not query.exists():
             return Response({
                 'success': False,
                 'message': 'Uzytkownik nie istnieje.'
             }, status=400)
-
 
         profile = query.get()
         for ban in Ban.objects.all():

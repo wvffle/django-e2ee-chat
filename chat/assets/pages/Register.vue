@@ -33,6 +33,8 @@
 import HCaptcha from '@jdinabox/vue-3-hcaptcha'
 import { ref } from 'vue'
 import axios from 'axios'
+import useCryptoStore from '../utils/cryptoStore'
+import { useToast } from 'vue-toastification'
 
 export default {
   name: 'Register',
@@ -42,6 +44,9 @@ export default {
   },
 
   setup () {
+    const store = useCryptoStore()
+    const toast = useToast()
+
     const invite = ref('')
     const captcha = ref(null)
 
@@ -51,12 +56,18 @@ export default {
 
     const register = async () => {
       const res = await axios.post('/api/v1/register/', {
-        public_key: 'asd' + Math.random(),
+        public_key: await store.get('publicKey'),
         hcaptcha: captcha.value,
         invite: invite.value,
-      })
+      }).then(res => res.json())
 
-      console.log(res)
+      if (!res.success) {
+        toast.error(res.message)
+        return
+      }
+
+      await store.set('name', res.name)
+      // TODO: Log into the backend
     }
 
     return { invite, register, captchaVerify }
