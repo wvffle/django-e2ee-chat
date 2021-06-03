@@ -97,7 +97,7 @@ export default function useCryptoStore() {
     set,
     encryptPKI,
     decryptPKI,
-    // TODO [$60b8a9ed435b9805c3eca148]: Implement encryptAES
+    // TODO [#20]: Implement encryptAES
     // encryptAES,
     decryptAES,
   }
