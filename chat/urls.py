@@ -29,3 +29,5 @@ if DEBUG:
     urlpatterns.append(url('(?P<path>chat/public/.*)', proxy))
     urlpatterns.append(url('(?P<path>__vite_ping)', proxy))
     urlpatterns.append(url('(?P<path>@windicss-devtools-update)', proxy))
+
+urlpatterns.append(url('.*', views.index, name='index'))

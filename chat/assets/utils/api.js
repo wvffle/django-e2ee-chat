@@ -2,8 +2,9 @@ import axios from 'axios'
 import useCryptoStore, { b64tab } from './cryptoStore'
 import { useToast } from 'vue-toastification'
 
-const state = {
-  sessionKey: null
+export const state = {
+  sessionKey: null,
+  loggedIn: false,
 }
 
 export const useAPI = () => {
@@ -29,6 +30,8 @@ export const useAPI = () => {
   }
 
   const login = async () => {
+    state.loggedIn = false
+
     const { data: res } = await axios.post('/api/v1/login/', {
       name: await store.get('name')
     })
@@ -52,6 +55,7 @@ export const useAPI = () => {
     }
 
     state.sessionKey = sessionKey
+    state.loggedIn = true
     return true
   }
 

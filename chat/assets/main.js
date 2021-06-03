@@ -12,7 +12,7 @@ import 'vue-toastification/dist/index.css'
 
 const app = createApp({
   setup: _ => {
-    provideToast({ timeout: 3000 })
+    provideToast({ timeout: 10000 })
   },
   render: _ => h(App)
 })

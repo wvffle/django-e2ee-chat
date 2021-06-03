@@ -1,5 +1,10 @@
 <template>
-  <router-view></router-view>
+  <router-view v-slot="{ Component, route }">
+    <transition :name="route.meta.transitionName" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
+
   <div class="clip-paths"></div>
   <waff-modal :open="!cryptoStorageInitialized" :closeable="false">
     <div class="relative">
@@ -39,11 +44,10 @@
 
 <script>
 import { useToast } from 'vue-toastification'
-import { Certificate } from 'pkijs'
 import { ref } from 'vue'
-import useCryptoStore, { abtb64 } from './utils/cryptoStore'
-import axios from 'axios'
+import useCryptoStore from './utils/cryptoStore'
 import { useAPI } from './utils/api'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'App',
@@ -51,6 +55,7 @@ export default {
     const toast = useToast()
     const store = useCryptoStore()
     const api = useAPI()
+    const router = useRouter()
     const cryptoPass = ref('')
 
     const initCrypto = async () => {
@@ -59,23 +64,24 @@ export default {
         return
       }
 
-      const name = await store.init(cryptoPass.value)
-      if (name !== undefined) {
-        if (await api.login()) {
+      switch (await store.init(cryptoPass.value).catch(err => (console.error(err), false))) {
+        case undefined:
+          toast.info('Nie znaleziono profilu')
+          return router.replace('/register')
+
+        case false:
+          toast.error('Wystapil blad podczas rozszyfrowywania lokalnych danych przegladarki')
           cryptoPass.value = ''
+          break
 
-          toast.success('Zalogowano.')
-          // TODO [#17]: Redirect to index route
-          return
-        }
-      } else {
-        toast.info('Nie znaleziono profilu')
+        default:
+          if (await api.login()) {
+            cryptoPass.value = ''
+
+            toast.success('Zalogowano.')
+            return router.replace('/')
+          }
       }
-
-      cryptoPass.value = ''
-
-      // NOTE: Register user in the backend
-      // TODO [#14]: Redirect to register route
     }
 
     return {
@@ -86,3 +92,24 @@ export default {
   }
 }
 </script>
+
+<style>
+.Vue-Toastification__toast {
+  border-radius: 1rem 0 1rem 0 !important;
+}
+
+.slide-left-enter-active, .slide-left-leave-active,
+.slide-right-enter-active, .slide-right-leave-active {
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+.slide-left-enter-from, .slide-right-leave-to {
+  transform: translateX(-15px);
+  opacity: 0;
+}
+
+.slide-right-enter-from, .slide-left-leave-to {
+  transform: translateX(15px);
+  opacity: 0;
+}
+</style>

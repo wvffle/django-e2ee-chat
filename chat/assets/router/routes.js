@@ -1,10 +1,8 @@
-const component = path => ({ component: () => {
+import { state } from '../utils/api'
+
+const component = path => ({ component: async () => {
   if ('__DJANGO_ERROR__' in window) {
     return import('../pages/Error.vue')
-  }
-
-  if (!localStorage.publicKey) {
-    return import('../pages/Register.vue')
   }
 
   return import(/* @vite-ignore */ path)
@@ -13,4 +11,5 @@ const component = path => ({ component: () => {
 
 export default [
     { name: 'Index', path: '/', ...component('../pages/Index.vue') },
+    { name: 'Register', path: '/register', ...component('../pages/Register.vue') },
   ]

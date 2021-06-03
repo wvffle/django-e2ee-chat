@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { CryptoStorage } from '@webcrypto/storage'
 
 const store = ref(null)
@@ -9,27 +9,31 @@ const ALGORITHM = {
   hash: { name: 'SHA-512' }
 }
 
-export default function useCryptoStore() {
-  const initialized = computed(() => store.value instanceof CryptoStorage)
+const initialized = ref(false)
 
-  const cryptoStore = new Promise(resolve => {
-    if (initialized.value) {
-      return store.value
+const cryptoStore = new Promise(resolve => {
+  if (store.value instanceof CryptoStorage) {
+    return store.value
+  }
+
+  const stop = watch(store, (to, from) => {
+    if (to instanceof CryptoStorage && from == null) {
+      stop()
+      return resolve(to)
     }
-
-    const stop = watch(store, (to, from) => {
-      if (to instanceof CryptoStorage && from == null) {
-        stop()
-        return resolve(to)
-      }
-    })
   })
+})
 
+export default function useCryptoStore() {
   const init = async password => {
-    store.value = new CryptoStorage(password, 'secure-data')
+    store.value = new CryptoStorage(password, 'secure-data-2')
 
     try {
-      await store.value.get('publicKey')
+      if (await store.value.get('publicKey') === undefined) {
+        throw new Error('Public key initialization failed')
+      }
+
+      initialized.value = true
       return get('name')
     } catch (e) {
       const { privateKey, publicKey } = await crypto.subtle.generateKey(
@@ -44,12 +48,15 @@ export default function useCryptoStore() {
         crypto.subtle.exportKey('spki', publicKey).then(abtb64).then(k => set('publicKey', k))
       ])
 
+      initialized.value = true
       return get('name')
     }
   }
 
   const get = async (key) => {
+    console.log('get')
     const store = await cryptoStore
+    console.log(store)
 
     // NOTE: We're disallowing the return of private key
     if (key === 'privateKey')  {

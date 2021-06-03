@@ -32,10 +32,9 @@
 <script>
 import HCaptcha from '@jdinabox/vue-3-hcaptcha'
 import { ref } from 'vue'
-import axios from 'axios'
-import useCryptoStore from '../utils/cryptoStore'
 import { useToast } from 'vue-toastification'
-import { useAPI } from '../utils/api'
+import { state, useAPI } from '../utils/api'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'Register',
@@ -45,12 +44,16 @@ export default {
   },
 
   setup () {
-    const store = useCryptoStore()
     const toast = useToast()
     const api = useAPI()
+    const router = useRouter()
 
     const invite = ref('')
     const captcha = ref(null)
+
+    if (state.loggedIn) {
+      return router.replace('/')
+    }
 
     const captchaVerify = token => {
       captcha.value = token
@@ -69,7 +72,7 @@ export default {
 
       toast.success('Zalogowano.')
 
-      // TODO [#18]: Redirect to index page
+      return router.replace('/')
     }
 
     return { invite, register, captchaVerify }
