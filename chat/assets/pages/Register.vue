@@ -69,7 +69,7 @@ export default {
 
       toast.success('Zalogowano.')
 
-      // TODO: Redirect to index page
+      // TODO [$60b8a9ed435b9805c3eca146]: Redirect to index page
     }
 
     return { invite, register, captchaVerify }

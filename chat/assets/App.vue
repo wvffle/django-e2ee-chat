@@ -65,7 +65,7 @@ export default {
           cryptoPass.value = ''
 
           toast.success('Zalogowano.')
-          // TODO: Redirect to index route
+          // TODO [$60b8a9ed435b9805c3eca145]: Redirect to index route
           return
         }
       } else {
