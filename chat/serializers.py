@@ -40,3 +40,13 @@ class LoginSerializer(serializers.Serializer):
             instance[key] = validated_data[key]
         instance.save()
         return instance
+
+
+class LoginVerifySerializer(serializers.Serializer):
+    authKey = serializers.CharField()
+
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass

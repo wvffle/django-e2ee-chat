@@ -4,12 +4,12 @@ User wysyla request `POST /register` z kluczem publicznym, kodem zaproszenia ora
 # Logowanie
 Uzytkownik wrzuca swoje klucze prywatne i publiczne do frontednu.
 
-Frontend wysyla zapytanie `POST /login` z identyfikatorem. Jezeli klucza nie ma w bazie - rzucamy 401, jezeli klucz jest zbanowany rzucamy 403. Jezeli wszystko jest okej - generujemy na serwerze klucz sesji (AES), zapisujemy go w modelu usera, po czym szyfrujemy kluczem publicznym uzytkownika wraz z losowym stringiem (32 znaki, base58) i nastepnie wysylamy zaszyfrowane stringi w odpowiedzi. Zapisujemy losowy string (klucz autentykacyjny) w cache na 15 min.
+Frontend wysyla zapytanie `POST /login` z identyfikatorem. Jezeli klucza nie ma w bazie - rzucamy 401, jezeli klucz jest zbanowany rzucamy 403. Jezeli wszystko jest okej - generujemy na serwerze klucz sesji (AES), zapisujemy go w modelu usera, po czym szyfrujemy kluczem publicznym uzytkownika wraz z losowym stringiem (32 znaki, base58) i nastepnie wysylamy zaszyfrowane stringi w odpowiedzi. Zapisujemy losowy string (klucz autentykacyjny) w sesji.
 Frontend przechwytuje string i stara sie go rozszyfrowac uzywajac klucza prywatnego.
 
 **⚠ ⚠ ⚠ OD TEGO MOMENTU WSZYSTKIE ZAPYTANIA/ODPOWIEDZI SA SZYFROWANE KLUCZEM SESYJNYM (AES) ⚠ ⚠ ⚠️**
 
-Nastepnie wysylane jest zapytanie `POST /login/verify` z rozszyfrowanym strigniem, serwer sprawdza czy przeslany klucz autentykacyjny jest w cache. Jezeli tak, zwracamy pozytywna odpowiedz, jezeli nie - rzucamy bledem 403.
+Nastepnie wysylane jest zapytanie `POST /login/verify` z rozszyfrowanym strigniem, serwer sprawdza czy przeslany klucz autentykacyjny jest w sesji. Jezeli tak, zwracamy pozytywna odpowiedz, jezeli nie - rzucamy bledem 403.
 
 Pomocne linki:
 - https://www.pycryptodome.org/en/latest/src/examples.html#encrypt-data-with-rsa

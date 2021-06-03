@@ -17,6 +17,7 @@ register = template.Library()
 
 DEV = settings.DEBUG
 
+
 def vite_manifest(entries_names):
     app_name = 'chat'
     manifest_filepath = path.join(app_name, 'static/manifest.json')

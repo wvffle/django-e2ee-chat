@@ -2,6 +2,12 @@ import { computed, ref, watch } from 'vue'
 import { CryptoStorage } from '@webcrypto/storage'
 
 const store = ref(null)
+const ALGORITHM = {
+  name: 'RSA-OAEP',
+  modulusLength: 2048,
+  publicExponent: new Uint8Array([1, 0, 1]),
+  hash: { name: 'SHA-512' }
+}
 
 export default function useCryptoStore() {
   const initialized = computed(() => store.value instanceof CryptoStorage)
@@ -27,20 +33,15 @@ export default function useCryptoStore() {
       return get('name')
     } catch (e) {
       const { privateKey, publicKey } = await crypto.subtle.generateKey(
-        {
-          name: 'RSA-OAEP',
-          modulusLength: 2048,
-          publicExponent: new Uint8Array([1, 0, 1]),
-          hash: { name: 'SHA-512' }
-        },
+        ALGORITHM,
         true,
         ['encrypt', 'decrypt']
       )
 
       // Note: Maybe it's worth wrapping key using https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/wrapKey
       await Promise.all([
-        crypto.subtle.exportKey('pkcs8', privateKey).then(abtb64).then(k => store.value.set('privateKey', k)),
-        crypto.subtle.exportKey('spki', publicKey).then(abtb64).then(k => store.value.set('publicKey', k))
+        crypto.subtle.exportKey('pkcs8', privateKey).then(abtb64).then(k => set('privateKey', k)),
+        crypto.subtle.exportKey('spki', publicKey).then(abtb64).then(k => set('publicKey', k))
       ])
 
       return get('name')
@@ -68,19 +69,25 @@ export default function useCryptoStore() {
   }
 
   const encryptPKI = async (publicKey, data) => {
-    return crypto.subtle.encrypt('RSA-OAEP', publicKey, data)
+    return crypto.subtle.encrypt({ name: ALGORITHM.name }, publicKey, data)
   }
 
   const decryptPKI = async (data) => {
     const privateKey = await crypto.subtle.importKey(
       'pkcs8',
       b64tab(await store.value.get('privateKey')),
-      'RSA-OAEP',
-      false,
+      ALGORITHM,
+      true,
       ['decrypt']
     )
 
-    return crypto.subtle.encrypt('RSA-OAEP', privateKey, data)
+    return crypto.subtle.decrypt({ name: ALGORITHM.name }, privateKey, new Uint8Array(data))
+  }
+
+  const decryptAES = async (key, iv, data) => {
+    const aesKey = await crypto.subtle.importKey("raw", key, "AES-CBC", false, ['decrypt'])
+    const buf = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, aesKey, data)
+    return atob(abtb64(buf))
   }
 
   return {
@@ -90,6 +97,9 @@ export default function useCryptoStore() {
     set,
     encryptPKI,
     decryptPKI,
+    // TODO: Implement encryptAES
+    // encryptAES,
+    decryptAES,
   }
 }
 
@@ -98,5 +108,13 @@ export const abtb64 = buf => {
 }
 
 export const b64tab = b64 => {
-  return Uint8Array.from(atob(b64).split('').map(k => k.charCodeAt(0))).buffer
+  const str = atob(b64)
+  const buf = new ArrayBuffer(str.length)
+  const bufView = new Uint8Array(buf)
+
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i)
+  }
+
+  return buf
 }

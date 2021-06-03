@@ -34,12 +34,12 @@ export default {
 }
 
 .btn::before {
-    right: calc(100% - 1px);
+  right: calc(100% - 1px);
   border-radius: 0 0 0 100%;
 }
 
 .btn::after {
-    left: calc(100% - 1px);
+  left: calc(100% - 1px);
   border-radius: 0 100% 0 0;
 }
 </style>

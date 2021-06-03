@@ -1,7 +1,10 @@
+import base64
 import json
 
+from Crypto.Util.Padding import pad
 from django.core.cache import cache
 
+from Crypto.Hash import SHA512
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
@@ -121,22 +124,23 @@ class LoginViewSet(viewsets.GenericViewSet):
                     'success': False
                 }, status=403)
 
-        public_key = RSA.import_key(profile.public_key)
-        cipher_rsa = PKCS1_OAEP.new(public_key)
+        public_key = RSA.import_key(f"-----BEGIN PUBLIC KEY-----\n{profile.public_key}\n-----END PUBLIC KEY-----")
+        cipher_rsa = PKCS1_OAEP.new(public_key, SHA512)
 
         session_key = get_random_bytes(32)
+        enc_session_key = cipher_rsa.encrypt(session_key)
+        profile.session_key = enc_session_key
+
         auth_key = base58.random(32)
+        request.session['auth_key'] = auth_key
 
-        cache.set(profile.name + '|auth_key', auth_key, 60 * 15)
-
-        profile.session_key = session_key
-
-        # TODO [#10]: zaszyfrowany auth_key uzywajac klucza sesji.
-        auth_key = cipher_rsa.encrypt(session_key)
+        cipher_aes = AES.new(session_key, AES.MODE_CBC)
+        ct_bytes = cipher_aes.encrypt(pad(auth_key.encode("utf-8"), AES.block_size))
 
         return Response({
-            'sessionKey': cipher_rsa.encrypt(session_key),
-            'authKey': cipher_rsa.encrypt(auth_key),
+            'sessionKey': base64.b64encode(enc_session_key),
+            'authKey': base64.b64encode(ct_bytes),
+            'iv': base64.b64encode(cipher_aes.iv),
             'success': True,
         })
 
@@ -149,3 +153,24 @@ class ProfileViewSet(viewsets.ModelViewSet):
 class InviteViewSet(viewsets.ModelViewSet):
     queryset = Invite.objects.all().order_by('invite')
     serializer_class = InviteSerializer
+
+
+class LoginVerifyViewSet(viewsets.GenericViewSet):
+    serializer_class = LoginVerifySerializer
+
+    def create(self, request, pk=None):
+        if 'authKey' not in request.data or request.data['authKey'] == '':
+            return Response({
+                'message': 'Nie podano klucza autentykacyjnego.',
+                'success': False
+            }, status=400)
+
+        if request.data['authKey'] != request.session['auth_key']:
+            return Response({
+                'message': 'Nie podano klucza autentykacyjnego.',
+                'success': False
+            }, status=403)
+
+        return Response({
+            'success': True
+        }, status=200)

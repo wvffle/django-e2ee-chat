@@ -43,12 +43,14 @@ import { Certificate } from 'pkijs'
 import { ref } from 'vue'
 import useCryptoStore, { abtb64 } from './utils/cryptoStore'
 import axios from 'axios'
+import { useAPI } from './utils/api'
 
 export default {
   name: 'App',
   setup () {
     const toast = useToast()
     const store = useCryptoStore()
+    const api = useAPI()
     const cryptoPass = ref('')
 
     const initCrypto = async () => {
@@ -59,11 +61,15 @@ export default {
 
       const name = await store.init(cryptoPass.value)
       if (name !== undefined) {
-        // TODO [#13]: Log into the backend
-        await axios.post('/api/v1/login')
+        if (await api.login()) {
+          cryptoPass.value = ''
 
-        cryptoPass.value = ''
-        return
+          toast.success('Zalogowano.')
+          // TODO: Redirect to index route
+          return
+        }
+      } else {
+        toast.info('Nie znaleziono profilu')
       }
 
       cryptoPass.value = ''

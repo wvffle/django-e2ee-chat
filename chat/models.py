@@ -12,7 +12,7 @@ class Invite(models.Model):
 class Profile(models.Model):
     invite = models.ForeignKey(Invite, on_delete=models.CASCADE)
     name = models.CharField(max_length=8)
-    session_key = models.CharField(max_length=32)
+    session_key = models.CharField(max_length=1024)
     public_key = models.CharField(max_length=1024)
 
     def __str__(self):

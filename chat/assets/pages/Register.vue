@@ -35,6 +35,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import useCryptoStore from '../utils/cryptoStore'
 import { useToast } from 'vue-toastification'
+import { useAPI } from '../utils/api'
 
 export default {
   name: 'Register',
@@ -46,6 +47,7 @@ export default {
   setup () {
     const store = useCryptoStore()
     const toast = useToast()
+    const api = useAPI()
 
     const invite = ref('')
     const captcha = ref(null)
@@ -55,19 +57,19 @@ export default {
     }
 
     const register = async () => {
-      const res = await axios.post('/api/v1/register/', {
-        public_key: await store.get('publicKey'),
-        hcaptcha: captcha.value,
-        invite: invite.value,
-      }).then(res => res.json())
-
-      if (!res.success) {
-        toast.error(res.message)
+      if (!await api.register(invite.value, captcha.value)) {
         return
       }
 
-      await store.set('name', res.name)
-      // TODO [#16]: Log into the backend
+      toast.success('Zarejestrowano nowy profil.')
+
+      if (!await api.login()) {
+        return
+      }
+
+      toast.success('Zalogowano.')
+
+      // TODO: Redirect to index page
     }
 
     return { invite, register, captchaVerify }
