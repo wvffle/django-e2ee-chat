@@ -26,7 +26,7 @@ const cryptoStore = new Promise(resolve => {
 
 export default function useCryptoStore() {
   const init = async password => {
-    store.value = new CryptoStorage(password, 'secure-data-2')
+    store.value = new CryptoStorage(password, 'secure-data-3')
 
     try {
       if (await store.value.get('publicKey') === undefined) {
@@ -54,9 +54,7 @@ export default function useCryptoStore() {
   }
 
   const get = async (key) => {
-    console.log('get')
     const store = await cryptoStore
-    console.log(store)
 
     // NOTE: We're disallowing the return of private key
     if (key === 'privateKey')  {

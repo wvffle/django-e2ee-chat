@@ -56,7 +56,9 @@ export default {
     const store = useCryptoStore()
     const api = useAPI()
     const router = useRouter()
+
     const cryptoPass = ref('')
+    const loading = ref(false)
 
     const initCrypto = async () => {
       if (cryptoPass.value === '') {
@@ -64,14 +66,17 @@ export default {
         return
       }
 
+      loading.value = true
       switch (await store.init(cryptoPass.value).catch(err => (console.error(err), false))) {
         case undefined:
           toast.info('Nie znaleziono profilu')
+          loading.value = false
           return router.replace('/register')
 
         case false:
           toast.error('Wystapil blad podczas rozszyfrowywania lokalnych danych przegladarki')
           cryptoPass.value = ''
+          loading.value = false
           break
 
         default:
@@ -79,6 +84,7 @@ export default {
             cryptoPass.value = ''
 
             toast.success('Zalogowano.')
+            loading.value = false
             return router.replace('/')
           }
       }
@@ -87,7 +93,8 @@ export default {
     return {
       cryptoPass,
       initCrypto,
-      cryptoStorageInitialized: store.initialized
+      cryptoStorageInitialized: store.initialized,
+      loading
     }
   }
 }

@@ -1,17 +1,22 @@
 <template>
   <div class="flex group transform duration-200 cursor-pointer hover:scale-110">
     <div class="btn text-white duration-200 bg-pink-600 group-hover:bg-pink-500 flex items-center" :style="{ height }">
-      <slot />
+      <div :class="{ 'text-transparent': loading }">
+        <slot />
+      </div>
+      <div v-if="loading" class="flex justify-center items-center absolute inset-0">
+        <i-icomoon-free-spinner9 class="w-8 h-8 flex-shrink-0 animate-spin"/>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-// TODO [#15]: Add loading state
 export default {
   name: 'Button',
   props: {
-    height: { type: Number, default: 36 }
+    height: { type: Number, default: 36 },
+    loading: { type: Boolean, default: false }
   }
 }
 </script>

@@ -13,7 +13,7 @@
             />
           </div>
           <div class="flex pt-8 justify-center">
-            <waff-button @click="register">Zarejestruj się</waff-button>
+            <waff-button @click="register" :loading="loading">Zarejestruj się</waff-button>
           </div>
         </div>
       </div>
@@ -50,6 +50,7 @@ export default {
 
     const invite = ref('')
     const captcha = ref(null)
+    const loading = ref(false)
 
     if (state.loggedIn) {
       return router.replace('/')
@@ -60,22 +61,26 @@ export default {
     }
 
     const register = async () => {
+      loading.value = true
       if (!await api.register(invite.value, captcha.value)) {
+        loading.value = false
         return
       }
 
       toast.success('Zarejestrowano nowy profil.')
 
       if (!await api.login()) {
+        loading.value = false
         return
       }
 
       toast.success('Zalogowano.')
 
+      loading.value = false
       return router.replace('/')
     }
 
-    return { invite, register, captchaVerify }
+    return { invite, register, captchaVerify, loading }
   }
 }
 </script>
