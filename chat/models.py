@@ -3,6 +3,7 @@ from django.db import models
 
 
 class Invite(models.Model):
+    id = models.AutoField(primary_key=True)
     invite = models.CharField(max_length=8)
 
     def __str__(self):
@@ -10,6 +11,7 @@ class Invite(models.Model):
 
 
 class Profile(models.Model):
+    id = models.AutoField(primary_key=True)
     invite = models.ForeignKey(Invite, on_delete=models.CASCADE)
     name = models.CharField(max_length=8)
     session_key = models.CharField(max_length=1024)
@@ -20,10 +22,12 @@ class Profile(models.Model):
 
 
 class Room(models.Model):
+    id = models.AutoField(primary_key=True)
     admin = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
 
 class Message(models.Model):
+    id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     date = models.DateField()
     message = models.JSONField()
@@ -31,6 +35,7 @@ class Message(models.Model):
 
 
 class Ban(models.Model):
+    id = models.AutoField(primary_key=True)
     invite = models.OneToOneField(Invite, on_delete=models.CASCADE, null=True, blank=True)
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True, blank=True)
 
