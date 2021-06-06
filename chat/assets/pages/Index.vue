@@ -1,22 +1,80 @@
 <template>
   <div class="grid grid-cols-5 h-screen bg-blue-gray-50">
     <div class="shadow overflow-hidden bg-white z-10">
-      <div class="shadow-md p-4 border-r-4 border-pink-600">
-        <div class="grid" style="grid-template-columns: auto calc(100% - 4rem)">
-          <div class="w-16 h-16 rounded-full bg-blue-300 flex-shrink-0"></div>
-          <div class="pl-4 w-full">
-            <div class="text-lg text-gray-700">ox4a66at</div>
-            <div class="text-gray-600 truncate">dlugie wiadomosci tez sie ladnie wyswietlaja </div>
+      <div class="bg-pink-600 text-white p-4 items-center flex">
+        <div class="text-xl">
+          {{ profile.name || '&nbsp;' }}
+        </div>
+
+        <div class="ml-auto"></div>
+        <div class="bg-pink-500 p-2 rounded-full transform transition duration-200 hover:scale-120 cursor-pointer">
+          <i-ri-chat-new-fill class="w-6 h-6" />
+        </div>
+      </div>
+      <div class="relative">
+        <input type="text" class="w-full pl-10 pr-4 py-2 border-b border-pink-600" placeholder="Szukaj pokoju" />
+        <i-uil-comment-alt-search class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-600"/>
+      </div>
+
+      <h2 class="text-lg px-4 py-2 text-gray-400">Recent</h2>
+
+      <div class="max-w-full px-4 flex overflow-x-auto py-2">
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
+      </div>
+
+      <h2 class="text-lg px-4 py-2 text-gray-400">Invites</h2>
+
+      <div class="border-b border-gray-200 p-4">
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0"></div>
+          <div class="pl-4 text-gray-700">aoP86xTu7</div>
+          <div class="ml-auto"></div>
+          <div class="bg-green-400 p-2 rounded-full transform transition duration-200 hover:scale-120 cursor-pointer mr-2">
+            <i-ri-chat-check-fill class="w-4 h-4 text-white" />
+          </div>
+          <div class="bg-red-400 p-2 rounded-full transform transition duration-200 hover:scale-120 cursor-pointer">
+            <i-ri-chat-delete-fill class="w-4 h-4 text-white" />
+          </div>
+        </div>
+      </div>
+
+      <h2 class="text-lg px-4 py-2 text-gray-400">Rooms</h2>
+
+      <div class="border-b border-gray-200 p-4">
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0"></div>
+          <div class="pl-4">
+            <div class="text-gray-700">aoP86xTu7</div>
+            <div class="text-xs text-gray-600 truncate">siema</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shadow p-4 border-r-4 border-pink-600 bg-pink-50">
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full bg-blue-300 flex-shrink-0"></div>
+          <div class="pl-4">
+            <div class="text-gray-700">ox4a66at</div>
+            <div class="text-xs text-gray-600 truncate">dlugie wiadomosci tez sie ladnie wyswietlaja </div>
           </div>
         </div>
       </div>
 
       <div class="border-b border-gray-200 p-4">
-        <div class="grid" style="grid-template-columns: auto calc(100% - 4rem)">
-          <div class="w-16 h-16 rounded-full bg-pink-500 flex-shrink-0"></div>
-          <div class="pl-4 w-full">
-            <div class="text-lg text-gray-700">aoP86xTu7</div>
-            <div class="text-gray-600 truncate">siema</div>
+        <div class="flex items-center">
+          <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0"></div>
+          <div class="pl-4">
+            <div class="text-gray-700">aoP86xTu7</div>
+            <div class="text-xs text-gray-600 truncate">siema</div>
           </div>
         </div>
       </div>
@@ -114,7 +172,23 @@
 </template>
 
 <script>
+import { reactive } from 'vue'
+import useCryptoStore from '../utils/cryptoStore'
+
 export default {
-  name: 'Index'
+  name: 'Index',
+  setup () {
+    const store = useCryptoStore()
+
+    const profile = reactive({
+      name: null
+    })
+
+    ;(async () => {
+      profile.name = await store.get('name')
+    })()
+
+    return { profile }
+  }
 }
 </script>
