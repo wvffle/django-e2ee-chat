@@ -6,6 +6,7 @@ services:
     working_dir: /app
     entrypoint: ./development.sh
     restart: always
+    tty: true
     environment:
       - NODE_ENV=development
       - DJANGO_ENV=development

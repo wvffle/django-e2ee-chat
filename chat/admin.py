@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 
-from chat.models import Profile, Invite, Ban
+from chat.models import Profile, Invite, Ban, Room
 
 
 class InviteForm(forms.ModelForm):
@@ -32,3 +32,4 @@ class BanAdmin(admin.ModelAdmin):
 admin.site.register(Invite, InviteAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Ban, BanAdmin)
+admin.site.register(Room)

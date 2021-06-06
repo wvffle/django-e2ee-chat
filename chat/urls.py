@@ -9,7 +9,8 @@ router.register(r'v1/profiles', views.ProfileViewSet)
 router.register(r'v1/invites', views.InviteViewSet)
 router.register(r'v1/register', views.RegisterViewSet, basename='v1/register')
 router.register(r'v1/login', views.LoginViewSet, basename='v1/login')
-router.register(r'v1/login/verify', views.LoginVerifyViewSet, basename='v1/login')
+router.register(r'v1/login/verify', views.LoginVerifyViewSet, basename='v1/login/verify')
+router.register(r'v1/profile/rooms', views.ProfileRoomsViewSet, basename='v1/profile/rooms')
 
 urlpatterns = [
     path('', views.index, name='index'),

@@ -1,8 +1,11 @@
 import base64
+import collections
+import itertools
 import json
 
 from Crypto.Util.Padding import pad
 from django.core.cache import cache
+from django.core.serializers import serialize
 
 from Crypto.Hash import SHA512
 from Crypto.PublicKey import RSA
@@ -20,7 +23,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from chat.utils import base58
-from chat.models import Ban
+from chat.models import Ban, Room, Message
 from chat.serializers import *
 
 
@@ -137,6 +140,9 @@ class LoginViewSet(viewsets.GenericViewSet):
         cipher_aes = AES.new(session_key, AES.MODE_CBC)
         ct_bytes = cipher_aes.encrypt(pad(auth_key.encode("utf-8"), AES.block_size))
 
+        request.session['name'] = request.data['name']
+        request.session['authenticated'] = False
+
         return Response({
             'sessionKey': base64.b64encode(enc_session_key),
             'authKey': base64.b64encode(ct_bytes),
@@ -171,6 +177,59 @@ class LoginVerifyViewSet(viewsets.GenericViewSet):
                 'success': False
             }, status=403)
 
+        request.session['authenticated'] = True
         return Response({
             'success': True
         }, status=200)
+
+
+class ProfileRoomsViewSet(viewsets.GenericViewSet):
+    serializer_class = RoomSerializer
+    # queryset = Room.objects.all().order_by('name')
+
+    def get(self, request, pk=None):
+        if 'name' not in request.session:
+            return Response({
+                'success': False,
+            }, status=400)
+
+        rooms = []
+        for model in Room.objects.filter(participants__name=request.session['name']).all():
+            rooms.append({
+                'name': model.name,
+                'display_name': model.display_name,
+                'image': model.image.url,
+                'last_message': Message.objects.filter(room=model.id).first(),
+                'participants': [{'name': x[0], 'public_key': x[1]} for x in model.participants.values_list('name', 'public_key')],
+                'admin': model.admin.name == request.session['name']
+            })
+
+        return Response({
+            'rooms': rooms,
+            'success': True,
+        })
+
+    def create(self, request, pk=None):
+        if 'name' not in request.session:
+            return Response({
+                'success': False,
+            }, status=401)
+
+        if 'image' not in request.data or 'name' not in request.data:
+            return Response({
+                'message': 'Nie podano nazwy lub zdjecia.',
+                'success': False
+            }, status=400)
+
+        admin = Profile.objects.get(name=request.session['name'])
+        room = Room(admin=admin, display_name=request.data['display_name'], image=request.data['image'], name=base58.random(8))
+        room.save()
+        room.participants.set([admin])
+
+        return Response({
+            'success': True,
+            'room': {
+                'id': room.id,
+                'name': room.name
+            }
+        })

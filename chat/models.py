@@ -23,7 +23,14 @@ class Profile(models.Model):
 
 class Room(models.Model):
     id = models.AutoField(primary_key=True)
-    admin = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    admin = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='admin')
+    participants = models.ManyToManyField(Profile)
+    name = models.CharField(max_length=8)
+    display_name = models.CharField(max_length=64)
+    image = models.ImageField(upload_to='room_images', default='1px-transparent.gif')
+
+    def __str__(self):
+        return self.name
 
 
 class Message(models.Model):

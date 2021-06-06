@@ -1,5 +1,13 @@
 from rest_framework import serializers
-from .models import Profile, Invite
+from .models import Profile, Invite, Room
+
+
+class DummySerializer(serializers.Serializer):
+    def create(self, validated_data):
+        pass
+
+    def update(self, instance, validated_data):
+        pass
 
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
@@ -14,39 +22,25 @@ class InviteSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('invite',)
 
 
-class RegisterSerializer(serializers.Serializer):
+class RegisterSerializer(DummySerializer):
     invite = serializers.CharField()
     public_key = serializers.CharField()
     hcaptcha = serializers.CharField()
 
-    def create(self, validated_data):
-        return Profile.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        for key in list(validated_data):
-            instance[key] = validated_data[key]
-        instance.save()
-        return instance
-
-
-class LoginSerializer(serializers.Serializer):
+class LoginSerializer(DummySerializer):
     name = serializers.CharField()
 
-    def create(self, validated_data):
-        return Profile.objects.create(**validated_data)
 
-    def update(self, instance, validated_data):
-        for key in list(validated_data):
-            instance[key] = validated_data[key]
-        instance.save()
-        return instance
-
-
-class LoginVerifySerializer(serializers.Serializer):
+class LoginVerifySerializer(DummySerializer):
     authKey = serializers.CharField()
 
-    def create(self, validated_data):
-        pass
 
-    def update(self, instance, validated_data):
-        pass
+class RoomSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+    image = serializers.ImageField()
+    display_name = serializers.CharField()
+
+    class Meta:
+        model = Room
+        fields = ('name', 'display_name', 'image')
