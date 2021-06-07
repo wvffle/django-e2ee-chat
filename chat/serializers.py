@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Profile, Invite, Room
+from .models import Profile, Invite, Room, Message
 
 
 class DummySerializer(serializers.Serializer):
@@ -44,3 +44,15 @@ class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
         fields = ('name', 'display_name', 'image')
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    room = serializers.CharField()
+
+    class Meta:
+        model = Message
+        room = serializers.CharField()
+        date = serializers.IntegerField()
+        message = serializers.JSONField()
+        retention_seconds = serializers.IntegerField()
+        fields = ('room', 'date', 'message', 'retention_seconds')

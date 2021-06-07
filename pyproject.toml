@@ -13,6 +13,8 @@ djangorestframework = "^3.12.4"
 pycryptodome = "^3.10.1"
 Pillow = "^8.2.0"
 channels = "^3.0.3"
+msgpack = "^1.0.2"
+u-msgpack-python = "^2.7.1"
 
 [tool.poetry.dev-dependencies]
 commitizen = "^2.17.0"

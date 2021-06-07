@@ -46,6 +46,7 @@ export const useAPI = () => {
     // TODO [#19]: Decrypt iv with PKI
     const authKey = await store.decryptAES(sessionKey, b64tab(res.iv), b64tab(res.authKey))
 
+    // TODO: Encrypt authKey with PKI
     const { data } = await axios.post('/api/v1/login/verify/', { authKey })
       .catch(err => err.response)
 

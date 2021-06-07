@@ -1,6 +1,8 @@
 import { ref, watch } from 'vue'
 import { CryptoStorage } from '@webcrypto/storage'
 
+const encoder = new TextEncoder()
+
 const store = ref(null)
 const ALGORITHM = {
   name: 'RSA-OAEP',
@@ -73,8 +75,16 @@ export default function useCryptoStore() {
     return store.set(key, value)
   }
 
-  const encryptPKI = async (publicKey, data) => {
-    return crypto.subtle.encrypt({ name: ALGORITHM.name }, publicKey, data)
+  const encryptPKI = async (key, data) => {
+    const publicKey = await crypto.subtle.importKey(
+      'spki',
+      b64tab(key),
+      ALGORITHM,
+      true,
+      ['encrypt']
+    )
+
+    return crypto.subtle.encrypt({ name: ALGORITHM.name }, publicKey, encoder.encode(data))
   }
 
   const decryptPKI = async (data) => {
@@ -95,6 +105,11 @@ export default function useCryptoStore() {
     return atob(abtb64(buf))
   }
 
+  const encryptAES = async (key, iv, data) => {
+    const buf = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, encoder.encode(data))
+    return abtb64(buf)
+  }
+
   return {
     initialized,
     init,
@@ -102,8 +117,7 @@ export default function useCryptoStore() {
     set,
     encryptPKI,
     decryptPKI,
-    // TODO [#20]: Implement encryptAES
-    // encryptAES,
+    encryptAES,
     decryptAES,
   }
 }

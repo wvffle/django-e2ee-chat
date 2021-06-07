@@ -185,29 +185,6 @@ class LoginVerifyViewSet(viewsets.GenericViewSet):
 
 class ProfileRoomsViewSet(viewsets.GenericViewSet):
     serializer_class = RoomSerializer
-    # queryset = Room.objects.all().order_by('name')
-
-    def get(self, request, pk=None):
-        if 'name' not in request.session:
-            return Response({
-                'success': False,
-            }, status=400)
-
-        rooms = []
-        for model in Room.objects.filter(participants__name=request.session['name']).all():
-            rooms.append({
-                'name': model.name,
-                'display_name': model.display_name,
-                'image': model.image.url,
-                'last_message': Message.objects.filter(room=model.id).first(),
-                'participants': [{'name': x[0], 'public_key': x[1]} for x in model.participants.values_list('name', 'public_key')],
-                'admin': model.admin.name == request.session['name']
-            })
-
-        return Response({
-            'rooms': rooms,
-            'success': True,
-        })
 
     def create(self, request, pk=None):
         if 'name' not in request.session:
@@ -221,6 +198,7 @@ class ProfileRoomsViewSet(viewsets.GenericViewSet):
                 'success': False
             }, status=400)
 
+        # TODO: Add image as file
         admin = Profile.objects.get(name=request.session['name'])
         room = Room(admin=admin, display_name=request.data['display_name'], image=request.data['image'], name=base58.random(8))
         room.save()
@@ -232,4 +210,48 @@ class ProfileRoomsViewSet(viewsets.GenericViewSet):
                 'id': room.id,
                 'name': room.name
             }
+        })
+
+
+class MessagesViewSet(viewsets.GenericViewSet):
+    serializer_class = MessageSerializer
+
+    def create(self, request):
+        if 'name' not in request.session:
+            return Response({
+                'success': False,
+            }, status=401)
+
+        if 'room' not in request.data or 'date' not in request.data \
+                or 'message' not in request.data or 'retention_seconds' not in request.data:
+
+            return Response({
+                'message': 'Nie podano wszystkich pol.',
+                'success': False
+            }, status=400)
+
+        room_id_qs = Room.objects.filter(name=request.data['room'])
+
+        if not room_id_qs.exists():
+            return Response({
+                'message': 'Wybrany pokoj nie istnieje.',
+                'success': False
+            }, status=400)
+
+        room = room_id_qs.get()
+
+        if not room.participants.filter(name=request.session['name']).exists():
+            return Response({
+                'message': 'Nie jestes czlonkiem wybranego pokoju.',
+                'success': False
+            }, status=403)
+
+        message = Message(room_id=room.id, date=request.data['date'], message=request.data['message'], retention_seconds=request.data['retention_seconds'])
+        message.save()
+
+        # TODO: Broadcast message on websocket
+        # TODO: Fix message is not serializable to JSON
+
+        return Response({
+            'message': message
         })

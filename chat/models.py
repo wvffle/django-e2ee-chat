@@ -36,7 +36,7 @@ class Room(models.Model):
 class Message(models.Model):
     id = models.AutoField(primary_key=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    date = models.DateField()
+    date = models.IntegerField()
     message = models.JSONField()
     retention_seconds = models.IntegerField()
 

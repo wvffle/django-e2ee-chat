@@ -53,5 +53,10 @@ export default defineConfig(({
     port: 3001,
     open: false,
     cors: true,
+
+    hmr: {
+      port: 443,
+      host: '3001.local.dev'
+    }
   }
 }))

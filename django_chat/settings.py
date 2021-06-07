@@ -38,7 +38,6 @@ ALLOWED_HOSTS = [host for host in ALLOWED_HOSTS if host is not None]
 # Application definition
 
 INSTALLED_APPS = [
-    'chat',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -46,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'chat',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,9 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'django_chat.wsgi.application'
+# WSGI_APPLICATION = 'django_chat.wsgi.application'
+ASGI_APPLICATION = "django_chat.asgi.application"
+
 
 
 # Database
@@ -131,3 +134,9 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
