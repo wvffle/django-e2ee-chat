@@ -198,7 +198,7 @@ class ProfileRoomsViewSet(viewsets.GenericViewSet):
                 'success': False
             }, status=400)
 
-        # TODO [$60bdf19b83cbd405da611b63]: Add image as file
+        # TODO [#23]: Add image as file
         admin = Profile.objects.get(name=request.session['name'])
         room = Room(admin=admin, display_name=request.data['display_name'], image=request.data['image'], name=base58.random(8))
         room.save()
@@ -249,8 +249,8 @@ class MessagesViewSet(viewsets.GenericViewSet):
         message = Message(room_id=room.id, date=request.data['date'], message=request.data['message'], retention_seconds=request.data['retention_seconds'])
         message.save()
 
-        # TODO [$60bdf19b83cbd405da611b64]: Broadcast message on websocket
-        # TODO [$60bdf19b83cbd405da611b65]: Fix message is not serializable to JSON
+        # TODO [#24]: Broadcast message on websocket
+        # TODO [#25]: Fix message is not serializable to JSON
 
         return Response({
             'message': message

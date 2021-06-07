@@ -176,7 +176,7 @@ export default {
       const { data } = await axios.post('/api/v1/messages/', {
         room: room.name,
         date: +new Date,
-        // TODO [$60bdf19b83cbd405da611b61]: Implement message retention
+        // TODO [#21]: Implement message retention
         retention_seconds: 20,
         message: {
           message: encryptedMessage,
