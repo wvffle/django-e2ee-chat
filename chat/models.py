@@ -35,6 +35,7 @@ class Room(models.Model):
 
 class Message(models.Model):
     id = models.AutoField(primary_key=True)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)
     date = models.IntegerField()
     message = models.JSONField()

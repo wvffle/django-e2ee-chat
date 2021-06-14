@@ -52,14 +52,14 @@
       <div v-for="room of Object.values(profile.rooms)" @click="select(room)" :class="selectedRoom === room ? 'border-pink-600 border-r-4 bg-pink-50' : 'border-gray-200 border-b'" class="p-4 hover:bg-pink-50 cursor-pointer">
         <div class="flex items-center">
           <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative">
-            {{ room?.name?.slice(0, 2) }}
+            {{ room?.display_name?.slice(0, 2) }}
             <img class="absolute inset-0 rounded-full block object-cover w-full h-full" :src="room.image" />
           </div>
           <div class="pl-4">
-            <div class="text-gray-700">{{ room.name }}</div>
+            <div class="text-gray-700">{{ room.display_name }}</div>
             <div class="text-xs text-gray-600 truncate">
-              <span v-if="room.message">{{ room.message }}</span>
-              <span v-else>-- Brak wiadomości --</span>
+              <span v-if="room.lastMessage">{{ parseEvent(room.lastMessage) }}</span>
+              <span v-else>✏️️ Brak wiadomości</span>
             </div>
           </div>
         </div>
@@ -104,13 +104,13 @@
 
 <script>
 import { reactive, ref } from 'vue'
-import useCryptoStore, { abtb64 } from '../utils/cryptoStore'
+import useCryptoStore, { abtb64, b64tab } from '../utils/cryptoStore'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import axios from 'axios'
 
 export default {
   name: 'Index',
-  setup () {
+  setup: function () {
     const store = useCryptoStore()
 
     const message = ref('')
@@ -121,7 +121,44 @@ export default {
       rooms: {}
     })
 
-    const rws = new ReconnectingWebSocket(`wss://${location.hostname}/ws/chat/test`);
+    const parseEvent = ({ type, date, author, data }) => {
+      switch (type) {
+        case 'message':
+          return `${author}: ${data}`
+          break
+      }
+    }
+
+    const decryptEvent = async ({ id, date, author, message: data }) => {
+      // NOTE: Backend returns null message when there is no message in room
+      if (data === null) {
+        return { id, type: 'message', date, author, data: '' }
+      }
+
+      // Message is not send to us
+      if (!(profile.name in data.keys)) {
+        return { id, type: 'message', date, author, data: '🔒 Zaszyfrowana wiadomość' }
+      }
+
+      const [key, iv] = await Promise.all(
+          data.keys[profile.name]
+              .split('|')
+              .map(b64tab)
+              .map(store.decryptPKI)
+      ).then(arr => arr.map(abtb64).map(atob).map(b64tab))
+
+      const message = await store.decryptAES(key, iv, b64tab(data.message))
+
+      return {
+        id,
+        type: 'message',
+        date: new Date(date),
+        data: message,
+        author
+      }
+    }
+
+    const rws = new ReconnectingWebSocket(`wss://${location.hostname}/ws/chat/test`)
     rws.addEventListener('open', async () => {
       profile.name = await store.get('name')
 
@@ -131,17 +168,24 @@ export default {
       }))
     })
 
-    rws.addEventListener('message', ({ data: str }) => {
+    rws.addEventListener('message', async ({ data: str }) => {
       const data = JSON.parse(str)
 
       switch (data.type) {
         case 'rooms':
-          for (const room of data.rooms) {
-            profile.rooms[room.name] =  room
+          const rooms = await Promise.all(data.rooms.map(room => (async () => ({
+            ...room,
+            lastMessage: await decryptEvent(room.last_message)
+          }))()))
+
+          for (const room of rooms) {
+            profile.rooms[room.name] = room
           }
           return
-        case 'message':
+
+        case 'room.m':
           break
+
         case 'invites':
           break
       }
@@ -161,15 +205,19 @@ export default {
         length: 256
       }, true, ['encrypt', 'decrypt'])
 
-      const iv = await crypto.getRandomValues(new Uint8Array(16))
+
+      const [keyBuf, iv] = await Promise.all([
+        crypto.subtle.exportKey('raw', key),
+        crypto.getRandomValues(new Uint8Array(16))
+      ])
 
       const encryptedMessage = await store.encryptAES(key, iv, message.value)
 
       const keys = {}
       await Promise.all(room.participants.map(async ({ name, public_key }) => {
         keys[name] = [
-            abtb64(await store.encryptPKI(public_key, key)),
-            abtb64(await store.encryptPKI(public_key, abtb64(iv)))
+          abtb64(await store.encryptPKI(public_key, abtb64(keyBuf))),
+          abtb64(await store.encryptPKI(public_key, abtb64(iv)))
         ].join('|')
       }))
 
@@ -188,7 +236,7 @@ export default {
       message.value = ''
     }
 
-    return { profile, selectedRoom, message, select, send }
+    return { profile, selectedRoom, message, select, send, parseEvent }
   }
 }
 </script>

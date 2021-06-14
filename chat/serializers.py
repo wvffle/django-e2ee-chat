@@ -10,7 +10,9 @@ class DummySerializer(serializers.Serializer):
         pass
 
 
-class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
+    name = serializers.CharField()
+
     class Meta:
         model = Profile
         fields = ('name', 'invite')
@@ -47,12 +49,12 @@ class RoomSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    room = serializers.CharField()
+    room = serializers.StringRelatedField()
+    author = serializers.StringRelatedField()
+    date = serializers.IntegerField()
+    message = serializers.JSONField()
+    retention_seconds = serializers.IntegerField()
 
     class Meta:
         model = Message
-        room = serializers.CharField()
-        date = serializers.IntegerField()
-        message = serializers.JSONField()
-        retention_seconds = serializers.IntegerField()
-        fields = ('room', 'date', 'message', 'retention_seconds')
+        fields = ('id', 'room', 'date', 'message', 'retention_seconds', 'author')

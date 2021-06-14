@@ -5,6 +5,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from chat.models import Profile, Message, Room
+from chat.serializers import MessageSerializer
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -58,7 +59,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             'name': model.name,
             'display_name': model.display_name,
             'image': model.image.url,
-            'last_message': Message.objects.filter(room=model.id).values()[0],
+            'last_message': MessageSerializer(Message.objects.filter(room=model.id).last()).data,
             'participants': [
                 {'name': x[0], 'public_key': x[1]}
                 for x in model.participants.values_list('name', 'public_key')

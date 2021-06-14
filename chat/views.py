@@ -180,6 +180,8 @@ class LoginVerifyViewSet(viewsets.GenericViewSet):
                 'success': False
             }, status=403)
 
+        profile = Profile.objects.filter(name=request.session['name']).first()
+        request.session['profile_id'] = profile.id
         request.session['authenticated'] = True
         return Response({
             'success': True
@@ -190,7 +192,7 @@ class ProfileRoomsViewSet(viewsets.GenericViewSet):
     serializer_class = RoomSerializer
 
     def create(self, request, pk=None):
-        if 'name' not in request.session:
+        if 'name' not in request.session or not request.session['authenticated']:
             return Response({
                 'success': False,
             }, status=401)
@@ -220,7 +222,7 @@ class MessagesViewSet(viewsets.GenericViewSet):
     serializer_class = MessageSerializer
 
     def create(self, request):
-        if 'name' not in request.session:
+        if 'name' not in request.session or not request.session['authenticated']:
             return Response({
                 'success': False,
             }, status=401)
@@ -251,6 +253,7 @@ class MessagesViewSet(viewsets.GenericViewSet):
 
         message = Message(
             room_id=room.id,
+            author_id=request.session['profile_id'],
             date=request.data['date'],
             message=request.data['message'],
             retention_seconds=request.data['retention_seconds'],
