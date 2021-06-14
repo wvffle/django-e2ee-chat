@@ -6,6 +6,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from chat.models import Profile, Message, Room
 from chat.serializers import MessageSerializer
+from django_chat.settings import DEBUG
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -44,7 +45,17 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 ],
             )
 
-        await self.send(text_data=json.dumps(data))
+        if msg_type == 'room.fetch':
+            return await self.send(text_data=json.dumps({
+                'type': 'room.m.l',
+                'room': data['room'],
+                'lastEvent': data['lastEvent'],
+                'events': await self.get_room_messages(data['room'], data['lastEvent']),
+            }))
+
+        # NOTE: In development mode, we echo the packets that are unknown to us
+        if DEBUG:
+            await self.send(text_data=json.dumps(data))
 
     async def send_event(self, data):
         await self.send(text_data=json.dumps(data['data']))
@@ -70,3 +81,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def get_invites(self):
         pass
+
+    @database_sync_to_async
+    def get_room_messages(self, room_name, last_id):
+        qs = Message.objects.filter(room__name=room_name)
+        if last_id is not None:
+            qs = qs.filter(id__lt=last_id)
+
+        return MessageSerializer(qs.order_by('-id').all()[:50], many=True).data

@@ -51,10 +51,21 @@ class RoomSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     room = serializers.StringRelatedField()
     author = serializers.StringRelatedField()
+    # TODO: Add profile images
+    # # NOTE: Dirty hack simply to have the author_image in separate field
+    # author_image = serializers.SlugRelatedField(slug_field='image', source='author', read_only=True)
     date = serializers.IntegerField()
     message = serializers.JSONField()
     retention_seconds = serializers.IntegerField()
 
     class Meta:
         model = Message
-        fields = ('id', 'room', 'date', 'message', 'retention_seconds', 'author')
+        fields = (
+            'id',
+            'room',
+            'date',
+            'message',
+            'retention_seconds',
+            'author',
+            # 'author_image',
+        )
