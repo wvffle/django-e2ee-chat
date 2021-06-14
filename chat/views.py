@@ -4,6 +4,8 @@ import itertools
 import json
 
 from Crypto.Util.Padding import pad
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.core.cache import cache
 from django.core.serializers import serialize
 
@@ -255,8 +257,19 @@ class MessagesViewSet(viewsets.GenericViewSet):
         )
         message.save()
 
-        # TODO [#24]: Broadcast message on websocket
+        data = MessageSerializer(message).data
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'room-{room.name}',
+            {
+                "type": "message",
+                "data": {
+                    "data": data,
+                    "type": "room.m",
+                },
+            }
+        )
 
         return Response({
-            'message': MessageSerializer(message).data
+            'message': data
         })
