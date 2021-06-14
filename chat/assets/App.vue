@@ -83,7 +83,7 @@ export default {
           if (await api.login()) {
             cryptoPass.value = ''
 
-            toast.success('Zalogowano.')
+            toast.success('Zalogowano.', { timeout: 2000 })
             loading.value = false
             return router.replace('/')
           }

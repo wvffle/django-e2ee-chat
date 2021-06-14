@@ -67,14 +67,14 @@ export default {
         return
       }
 
-      toast.success('Zarejestrowano nowy profil.')
+      toast.success('Zarejestrowano nowy profil.', { timeout: 2000 })
 
       if (!await api.login()) {
         loading.value = false
         return
       }
 
-      toast.success('Zalogowano.')
+      toast.success('Zalogowano.', { timeout: 2000 })
 
       loading.value = false
       return router.replace('/')
