@@ -12,24 +12,21 @@
         </div>
       </div>
       <div class="relative">
-        <input type="text" class="w-full pl-10 pr-4 py-2 border-b border-pink-600" placeholder="Szukaj pokoju" />
+        <input v-model="searchTerm" type="text" class="w-full pl-10 pr-4 py-2 border-b border-pink-600" placeholder="Szukaj pokoju" />
         <i-uil-comment-alt-search class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-600"/>
       </div>
 
-      <h2 class="text-lg px-4 pt-4 pb-2 text-gray-400 uppercase text-xs">Ostatnie pokoje</h2>
+      <template v-if="profile.lastRooms.length">
+        <h2 class="text-lg px-4 pt-4 pb-2 text-gray-400 uppercase text-xs">Ostatnie pokoje</h2>
 
-      <div class="max-w-full px-4 flex overflow-x-auto py-2">
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-        <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 mr-2 flex-shrink-0"></div>
-      </div>
+        <div class="max-w-full px-4 flex overflow-x-auto py-2">
+          <!-- TODO: Add full display name in a tooltip -->
+          <div @click="select(room)" v-for="room in profile.lastRooms" class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative cursor-pointer">
+            {{ room?.display_name?.slice(0, 2) }}
+            <img class="absolute inset-0 rounded-full block object-cover w-full h-full" :src="room.image" />
+          </div>
+        </div>
+      </template>
 
       <h2 class="text-lg px-4 pt-4 text-gray-400 uppercase text-xs">Zaproszenia</h2>
 
@@ -49,7 +46,7 @@
 
       <h2 class="text-lg px-4 pt-4 pb-2 text-gray-400 uppercase text-xs">Pokoje</h2>
 
-      <div v-for="room of Object.values(profile.rooms)" @click="select(room)" :class="selectedRoom === room ? 'border-pink-600 border-r-4 bg-pink-50' : 'border-gray-200 border-b'" class="p-4 hover:bg-pink-50 cursor-pointer">
+      <div v-for="room of filteredRooms" @click="select(room)" :class="selectedRoom === room ? 'border-pink-600 border-r-4 bg-pink-50' : 'border-gray-200 border-b'" class="p-4 hover:bg-pink-50 cursor-pointer">
         <div class="flex items-center">
           <div class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative">
             {{ room?.display_name?.slice(0, 2) }}
@@ -86,6 +83,7 @@
             <div v-for="message of selectedRoom?.messages" class="flex mb-2 max-w-full">
               <div v-if="message.type === 'message'" class="mr-auto relative">
                 <div class="absolute top-1/2 transform -translate-y-2/3 -translate-x-14">
+                  <!-- TODO: Add full author name in a tooltip -->
                   <div :class="message.author === profile.name ? 'bg-pink-500' : 'bg-blue-300'" class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative">
                     {{ message.author.slice(0, 2) }}
                     <!--                  <img class="absolute inset-0 rounded-full block object-cover w-full h-full" :src="message.author_image" />-->
@@ -112,7 +110,7 @@
 </template>
 
 <script>
-import { reactive, ref, nextTick } from 'vue'
+import { reactive, ref, nextTick, computed } from 'vue'
 import useCryptoStore, { abtb64, b64tab } from '../utils/cryptoStore'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import axios from 'axios'
@@ -126,10 +124,20 @@ export default {
     const selectedRoom = ref(null)
     const roomLoading = ref(false)
     const scrollView = ref(null)
+    const searchTerm = ref('')
 
     const profile = reactive({
       name: null,
-      rooms: {}
+      rooms: {},
+      lastRooms: []
+    })
+
+    const filteredRooms = computed(() => {
+      const rooms = Object.values(profile.rooms)
+      if (searchTerm.value) {
+        return rooms.filter(room => room.display_name.toLowerCase().includes(searchTerm.value.toLowerCase()))
+      }
+      return rooms
     })
 
     const parseEvent = ({ type, date, author, data }) => {
@@ -266,6 +274,9 @@ export default {
       selectedRoom.value = room
       roomLoading.value = true
 
+      profile.lastRooms.splice(profile.lastRooms.indexOf(room), 1)
+      profile.lastRooms.push(room)
+
       rws.send(JSON.stringify({
         type: 'room.fetch',
         room: room.name,
@@ -338,7 +349,19 @@ export default {
       }
     }
 
-    return { profile, selectedRoom, message, select, send, parseEvent, roomLoading, fetchMore, infiniteScroll, scrollView }
+    return {
+      profile,
+      selectedRoom,
+      message,
+      roomLoading,
+      scrollView,
+      searchTerm,
+      filteredRooms,
+      select,
+      send,
+      parseEvent,
+      infiniteScroll,
+    }
   }
 }
 </script>
