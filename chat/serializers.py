@@ -51,7 +51,7 @@ class RoomSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     room = serializers.StringRelatedField()
     author = serializers.StringRelatedField()
-    # TODO: Add profile images
+    # TODO [$60c7c344630b5005d04600f0]: Add profile images
     # # NOTE: Dirty hack simply to have the author_image in separate field
     # author_image = serializers.SlugRelatedField(slug_field='image', source='author', read_only=True)
     date = serializers.IntegerField()

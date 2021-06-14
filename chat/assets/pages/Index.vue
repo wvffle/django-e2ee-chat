@@ -197,7 +197,7 @@ export default {
           return
 
         case 'room.m':
-          // TODO: Render new unread message
+          // TODO [$60c7c344630b5005d04600ee]: Render new unread message
           profile.rooms[data.event.room].last_message = data.event
           const decryptedEvent = await decryptEvent(data.event)
           profile.rooms[data.event.room].lastMessage = decryptedEvent
@@ -312,7 +312,7 @@ export default {
         }
       })
 
-      // TODO: Render message sent but not received
+      // TODO [$60c7c344630b5005d04600ef]: Render message sent but not received
       console.log(data)
       message.value = ''
     }
