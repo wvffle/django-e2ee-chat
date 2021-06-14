@@ -265,9 +265,9 @@ class MessagesViewSet(viewsets.GenericViewSet):
         async_to_sync(channel_layer.group_send)(
             f'room-{room.name}',
             {
-                "type": "message",
+                "type": "send.event",
                 "data": {
-                    "data": data,
+                    "event": data,
                     "type": "room.m",
                 },
             }

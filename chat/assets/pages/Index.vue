@@ -184,6 +184,9 @@ export default {
           return
 
         case 'room.m':
+          // TODO: Render new unread message
+          profile.rooms[data.event.room].last_message = data.event
+          profile.rooms[data.event.room].lastMessage = await decryptEvent(data.event)
           break
 
         case 'invites':
