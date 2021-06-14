@@ -2,7 +2,7 @@ version: '3'
 
 services:
   e2ee-dev:
-    image: nikolaik/python-nodejs:python3.9-nodejs15-alpine
+    image: nikolaik/python-nodejs:python3.9-nodejs16-alpine
     working_dir: /app
     entrypoint: ./development.sh
     restart: always
