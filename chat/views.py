@@ -15,6 +15,7 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
+from django.http import JsonResponse
 from django.template.context_processors import csrf
 
 from django_chat.settings import HCAPTCHA_SECRET
@@ -246,12 +247,16 @@ class MessagesViewSet(viewsets.GenericViewSet):
                 'success': False
             }, status=403)
 
-        message = Message(room_id=room.id, date=request.data['date'], message=request.data['message'], retention_seconds=request.data['retention_seconds'])
+        message = Message(
+            room_id=room.id,
+            date=request.data['date'],
+            message=request.data['message'],
+            retention_seconds=request.data['retention_seconds'],
+        )
         message.save()
 
         # TODO [#24]: Broadcast message on websocket
-        # TODO [#25]: Fix message is not serializable to JSON
 
         return Response({
-            'message': message
+            'message': MessageSerializer(message).data
         })
