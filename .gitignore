@@ -259,3 +259,7 @@ dist
 # Build files
 chat/static/chat/*
 !chat/static/chat/.gitkeep
+
+# Media files
+media/room_images/*
+!media/room_images/.gitkeep
