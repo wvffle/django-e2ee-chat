@@ -9,6 +9,8 @@ import axios from 'axios'
 
 import { provideToast } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
+import VTooltipPlugin from 'v-tooltip'
+import 'v-tooltip/dist/v-tooltip.css'
 
 const app = createApp({
   setup: _ => {
@@ -16,6 +18,9 @@ const app = createApp({
   },
   render: _ => h(App)
 })
+
+// v-tooltip
+app.use(VTooltipPlugin)
 
 // Devtools
 if (process.env.NODE_ENV !== 'production' && '__VUE_DEVTOOLS_GLOBAL_HOOK__' in window) {

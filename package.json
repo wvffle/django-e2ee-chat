@@ -33,6 +33,7 @@
     "@webcrypto/storage": "^2.0.2",
     "axios": "^0.21.1",
     "reconnecting-websocket": "^4.4.0",
+    "v-tooltip": "^4.0.0-alpha.1",
     "vue": "^3.0.11",
     "vue-advanced-cropper": "^2.5.0",
     "vue-router": "^4.0.6",

@@ -20,8 +20,7 @@
         <h2 class="text-lg px-4 pt-4 pb-2 text-gray-400 uppercase text-xs">Ostatnie pokoje</h2>
 
         <div class="max-w-full px-4 flex overflow-x-auto py-2">
-          <!-- TODO [#29]: Add full display name in a tooltip -->
-          <div @click="select(room)" v-for="room in profile.lastRooms" class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative cursor-pointer mr-2 overflow-hidden">
+          <div v-tooltip="room?.display_name" @click="select(room)" :key="room.name" v-for="room in profile.lastRooms" class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative cursor-pointer mr-2 overflow-hidden">
             {{ room?.display_name?.slice(0, 2) }}
             <img class="absolute inset-0 block object-cover w-full h-full" :src="room.image" />
           </div>
@@ -82,8 +81,7 @@
             <div v-for="message of selectedRoom?.messages" class="flex mb-2 max-w-full">
               <div v-if="message.type === 'message'" class="mr-auto relative">
                 <div class="absolute top-1/2 transform -translate-y-2/3 -translate-x-14">
-                  <!-- TODO [#30]: Add full author name in a tooltip -->
-                  <div :class="message.author === profile.name ? 'bg-pink-500' : 'bg-blue-300'" class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative">
+                  <div v-tooltip="message.author" :class="message.author === profile.name ? 'bg-pink-500' : 'bg-blue-300'" class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative">
                     {{ message.author.slice(0, 2) }}
                     <!--                  <img class="absolute inset-0 rounded-full block object-cover w-full h-full" :src="message.author_image" />-->
                   </div>
