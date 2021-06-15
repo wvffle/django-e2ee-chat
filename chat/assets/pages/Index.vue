@@ -55,8 +55,7 @@
           <div class="pl-4">
             <div class="text-gray-700">{{ room.display_name }}</div>
             <div class="text-xs text-gray-600 truncate">
-              <span v-if="room.lastMessage">{{ parseEvent(room.lastMessage) }}</span>
-              <span v-else>✏️️ Brak wiadomości</span>
+              <span>{{ parseEvent(room.lastMessage) }}</span>
             </div>
           </div>
         </div>
@@ -171,13 +170,17 @@ export default {
         case 'message':
           return `${author}: ${data}`
           break
+
+        case 'null':
+          return data
+          break
       }
     }
 
     const decryptEvent = async ({ id, date, author, message: data }) => {
       // NOTE: Backend returns null message when there is no message in room
       if (data === null) {
-        return { id, type: 'message', date, author, data: '' }
+        return { id, type: 'null', date, author, data: '✏️️ Brak wiadomości, zacznij chatować' }
       }
 
       // Message is not send to us
