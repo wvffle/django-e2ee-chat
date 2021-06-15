@@ -213,6 +213,16 @@ class ProfileRoomsViewSet(viewsets.GenericViewSet):
         room.save()
         room.participants.set([admin])
 
+        data = RoomSerializer(room).data
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user-{request.session["name"]}',
+            {
+                "type": "subscribe.room",
+                "data": data,
+            }
+        )
+
         return Response({
             'success': True,
             'room': {

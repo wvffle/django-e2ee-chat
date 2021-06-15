@@ -43,6 +43,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     self.channel_layer.group_add(f'room-{room["name"]}', self.channel_name)
                     for room in rooms
                 ],
+                self.channel_layer.group_add(f'user-{data["name"]}', self.channel_name),
             )
 
         if msg_type == 'room.f':
@@ -59,6 +60,18 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     async def send_event(self, data):
         await self.send(text_data=json.dumps(data['data']))
+
+    async def subscribe_room(self, room):
+        rooms, _ = await asyncio.gather(
+            self.get_rooms(),
+            self.channel_layer.group_add(f'room-{room["data"]["name"]}', self.channel_name),
+        )
+
+        await self.send(text_data=json.dumps({
+            'type': 'rooms',
+            'rooms': rooms,
+            'forceSelect': room['data']['name']
+        })),
 
     @database_sync_to_async
     def set_user(self, name):

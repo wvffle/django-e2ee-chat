@@ -231,6 +231,11 @@ export default {
           for (const room of rooms) {
             profile.rooms[room.name] = room
           }
+
+          if (data.forceSelect) {
+            await select(profile.rooms[data.forceSelect])
+          }
+
           return
 
         case 'room.m':
@@ -287,6 +292,10 @@ export default {
 
 
           roomLoading.value = false
+          break
+
+        case 'room.c':
+          profile.rooms[data.name] = data
           break
 
         case 'invites':
@@ -382,7 +391,9 @@ export default {
       fd.append('display_name', roomName.value)
 
       const { data } = await axios.post('/api/v1/profile/rooms/', fd)
-      console.log(data)
+      roomName.value = ''
+      cropper.value.reset()
+      addingNewRoom.value = false
     }
 
     return {
