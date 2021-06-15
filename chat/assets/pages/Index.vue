@@ -7,7 +7,7 @@
         </div>
 
         <div class="ml-auto"></div>
-        <div class="bg-pink-500 p-2 rounded-full transform transition duration-200 hover:scale-120 cursor-pointer">
+        <div @click="addingNewRoom = true" class="bg-pink-500 p-2 rounded-full transform transition duration-200 hover:scale-120 cursor-pointer">
           <i-ri-chat-new-fill class="w-6 h-6" />
         </div>
       </div>
@@ -107,6 +107,29 @@
       </div>
     </div>
   </div>
+  <waff-modal v-model:open="addingNewRoom">
+    <div class="relative">
+      <h1 class="text-2xl pb-2 px-8 border-b border-gray-200">Stwórz nowy pokój</h1>
+      <div class="pt-4 pb-8">
+        <div class="flex items-center">
+          <div>
+            <image-cropper ref="cropper" class="mr-4">
+              <div class="absolute inset-0 rounded-full bg-pink-600 flex items-center justify-center uppercase text-white text-2xl">
+                {{ (roomName || 'na').slice(0, 2) }}
+              </div>
+            </image-cropper>
+          </div>
+
+          <input v-model="roomName" class="flex-grow-0 w-full block border-b-2 border-pink-300 focus:border-pink-500 px-4 py-2 outline-none" placeholder="Nazwa pokoju" type="text">
+        </div>
+
+      </div>
+
+      <div class="flex justify-center absolute w-full left-0 top-1/1 transform -translate-y-1/3">
+        <waff-button @click="createNewRoom" class="text-2xl" :height="52">Stwórz</waff-button>
+      </div>
+    </div>
+  </waff-modal>
 </template>
 
 <script>
@@ -125,6 +148,9 @@ export default {
     const roomLoading = ref(false)
     const scrollView = ref(null)
     const searchTerm = ref('')
+    const addingNewRoom = ref(false)
+    const roomName = ref('')
+    const cropper = ref(null)
 
     const profile = reactive({
       name: null,
@@ -228,10 +254,7 @@ export default {
 
             roomLoading.value = false
             await nextTick()
-            scrollView.value.scrollTo(
-                0,
-                scrollView.value.scrollHeight
-            )
+            scrollView.value.scrollTo(0, scrollView.value.scrollHeight)
             break
           }
 
@@ -255,7 +278,7 @@ export default {
             await nextTick()
             scrollView.value.scrollTo(
                 0,
-                scrollView.value.scrollHeight - selectedRoom.value._infiniteScroll.scrollBottom
+                scrollView.value.scrollHeight - selectedRoom.value._infiniteScroll
             )
           }
 
@@ -278,7 +301,7 @@ export default {
       profile.lastRooms.push(room)
 
       rws.send(JSON.stringify({
-        type: 'room.fetch',
+        type: 'room.f',
         room: room.name,
         lastEvent: null
       }))
@@ -328,25 +351,31 @@ export default {
       message.value = ''
     }
 
+    const infiniteScroll = event => {
+      if (!roomLoading.value && event.target.scrollTop <= 2) {
+        roomLoading.value = true
 
-    const fetchMore = () => {
-      roomLoading.value = true
+        selectedRoom.value._infiniteScroll = event.target.scrollHeight - event.target.scrollTop
 
-      rws.send(JSON.stringify({
-        type: 'room.fetch',
-        room: selectedRoom.value.name,
-        lastEvent: selectedRoom.value.messages[0].id
-      }))
+        rws.send(JSON.stringify({
+          type: 'room.f',
+          room: selectedRoom.value.name,
+          lastEvent: selectedRoom.value.messages[0].id
+        }))
+      }
     }
 
-    const infiniteScroll = event => {
-      if (!roomLoading.value && event.target.scrollTop === 0) {
-        selectedRoom.value._infiniteScroll = {
-          element: event.target,
-          scrollBottom: event.target.scrollHeight - event.target.scrollTop
-        }
-        fetchMore()
+    const createNewRoom = async () => {
+      const fd = new FormData()
+      const blob = await cropper.value.crop()
+      if (blob) {
+        fd.append('image', blob)
       }
+
+      fd.append('display_name', roomName.value)
+
+      const { data } = await axios.post('/api/v1/profile/rooms/', fd)
+      console.log(data)
     }
 
     return {
@@ -357,6 +386,10 @@ export default {
       scrollView,
       searchTerm,
       filteredRooms,
+      addingNewRoom,
+      roomName,
+      cropper,
+      createNewRoom,
       select,
       send,
       parseEvent,

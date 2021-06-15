@@ -197,15 +197,19 @@ class ProfileRoomsViewSet(viewsets.GenericViewSet):
                 'success': False,
             }, status=401)
 
-        if 'image' not in request.data or 'name' not in request.data:
+        if 'display_name' not in request.data:
             return Response({
-                'message': 'Nie podano nazwy lub zdjecia.',
+                'message': 'Nie podano nazwy.',
                 'success': False
             }, status=400)
 
-        # TODO [#23]: Add image as file
         admin = Profile.objects.get(name=request.session['name'])
-        room = Room(admin=admin, display_name=request.data['display_name'], image=request.data['image'], name=base58.random(8))
+
+        if 'image' in request.data:
+            room = Room(admin=admin, display_name=request.data['display_name'], image=request.data['image'], name=base58.random(8))
+        else:
+            room = Room(admin=admin, display_name=request.data['display_name'], name=base58.random(8))
+
         room.save()
         room.participants.set([admin])
 

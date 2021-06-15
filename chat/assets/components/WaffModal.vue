@@ -1,5 +1,5 @@
 <template>
-  <div v-if="open" @click.stop="closeOverlay()" class="fixed inset-0 z-100 bg-black bg-opacity-80 flex justify-center items-center">
+  <div v-if="open" ref="overlay" @click="closeOverlay" class="fixed inset-0 z-100 bg-black bg-opacity-80 flex justify-center items-center">
     <div class="w-full max-w-xl bg-white rounded shadow p-4">
       <slot></slot>
     </div>
@@ -7,6 +7,8 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
   name: 'WaffModal',
   props: {
@@ -16,6 +18,7 @@ export default {
   },
   emits: ['update:open'],
   setup (props, ctx) {
+    const overlay = ref(null)
 
     const close = () => {
       if (props.closeable) {
@@ -23,15 +26,16 @@ export default {
       }
     }
 
-    const closeOverlay = () => {
-      if (props.overlayCloses) {
+    const closeOverlay = event => {
+      if (event.target === overlay.value && props.overlayCloses) {
         return close()
       }
     }
 
     return {
       close,
-      closeOverlay
+      closeOverlay,
+      overlay
     }
   }
 }

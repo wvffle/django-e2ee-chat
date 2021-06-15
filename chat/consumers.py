@@ -45,7 +45,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                 ],
             )
 
-        if msg_type == 'room.fetch':
+        if msg_type == 'room.f':
             return await self.send(text_data=json.dumps({
                 'type': 'room.m.l',
                 'room': data['room'],
