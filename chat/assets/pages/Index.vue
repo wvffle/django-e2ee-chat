@@ -21,9 +21,9 @@
 
         <div class="max-w-full px-4 flex overflow-x-auto py-2">
           <!-- TODO: Add full display name in a tooltip -->
-          <div @click="select(room)" v-for="room in profile.lastRooms" class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative cursor-pointer">
+          <div @click="select(room)" v-for="room in profile.lastRooms" class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative cursor-pointer mr-2 overflow-hidden">
             {{ room?.display_name?.slice(0, 2) }}
-            <img class="absolute inset-0 rounded-full block object-cover w-full h-full" :src="room.image" />
+            <img class="absolute inset-0 block object-cover w-full h-full" :src="room.image" />
           </div>
         </div>
       </template>
@@ -297,8 +297,12 @@ export default {
       selectedRoom.value = room
       roomLoading.value = true
 
-      profile.lastRooms.splice(profile.lastRooms.indexOf(room), 1)
-      profile.lastRooms.push(room)
+      const idx = profile.lastRooms.indexOf(room)
+      if (~idx) {
+        profile.lastRooms.splice(idx, 1)
+      }
+
+      profile.lastRooms.unshift(room)
 
       rws.send(JSON.stringify({
         type: 'room.f',
