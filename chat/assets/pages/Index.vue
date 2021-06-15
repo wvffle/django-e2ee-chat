@@ -1,4 +1,4 @@
-<!-- TODO [$60c931069b3d5505ef8c9782]: Move all API calls to the api.js -->
+<!-- TODO [#31]: Move all API calls to the api.js -->
 <template>
   <div class="grid grid-cols-5 h-screen bg-blue-gray-50">
     <div class="shadow overflow-hidden bg-white z-10 grid grid-rows-[auto,auto,auto,1fr]" style="grid-template-columns: 100%">
@@ -272,7 +272,7 @@ export default {
         case 'logout':
           await store.deauth()
 
-          // TODO [$60c931069b3d5505ef8c9783]: Add seamless logout
+          // TODO [#32]: Add seamless logout
           return location.reload()
 
         case 'rooms':
