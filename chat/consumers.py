@@ -25,7 +25,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         print(data)
         msg_type = data['type']
         if msg_type == 'login':
-            # TODO: Check if user is authenticated
+            # TODO [$60c931069b3d5505ef8c9784]: Check if user is authenticated
             await self.set_user(data['name'])
 
             rooms, invites = await asyncio.gather(
