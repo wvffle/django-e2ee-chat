@@ -26,18 +26,25 @@ const cryptoStore = new Promise(resolve => {
   })
 })
 
+const PUBLIC_KEY_INITIALIZATION_ERROR = new Error('Public key initialization failed')
+
 export default function useCryptoStore() {
   const init = async password => {
-    store.value = new CryptoStorage(password, 'secure-data-5')
+    const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(password))
+    store.value = new CryptoStorage(password, new TextDecoder().decode(hash))
 
     try {
       if (await store.value.get('publicKey') === undefined) {
-        throw new Error('Public key initialization failed')
+        throw PUBLIC_KEY_INITIALIZATION_ERROR
       }
 
       initialized.value = true
       return get('name')
     } catch (e) {
+      if (e !== PUBLIC_KEY_INITIALIZATION_ERROR) {
+        console.error(e)
+      }
+
       const { privateKey, publicKey } = await crypto.subtle.generateKey(
         ALGORITHM,
         true,
@@ -53,6 +60,10 @@ export default function useCryptoStore() {
       initialized.value = true
       return get('name')
     }
+  }
+
+  const deauth = async () => {
+    store.value = null
   }
 
   const get = async (key) => {
@@ -119,6 +130,7 @@ export default function useCryptoStore() {
     decryptPKI,
     encryptAES,
     decryptAES,
+    deauth,
   }
 }
 

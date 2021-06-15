@@ -290,3 +290,71 @@ class MessagesViewSet(viewsets.GenericViewSet):
         return Response({
             'message': data
         })
+
+
+class RoomInviteViewSet(viewsets.GenericViewSet):
+    serializer_class = RoomInviteSerializer
+
+    def create(self, request):
+        if 'name' not in request.session or not request.session['authenticated']:
+            return Response({
+                'success': False,
+            }, status=401)
+
+        if 'room' not in request.data or 'invitee' not in request.data:
+            return Response({
+                'message': 'Nie podano wszystkich pol.',
+                'success': False
+            }, status=400)
+
+        room_id_qs = Room.objects.filter(name=request.data['room'])
+
+        if not room_id_qs.exists():
+            return Response({
+                'message': 'Wybrany pokoj nie istnieje.',
+                'success': False
+            }, status=400)
+
+        room = room_id_qs.get()
+
+        if not room.admin_id == request.session['profile_id']:
+            return Response({
+                'message': 'Nie jestes administratorem wybranego pokoju.',
+                'success': False
+            }, status=403)
+
+        invitee_qs = Profile.objects.filter(name=request.data['invitee'])
+        if not invitee_qs.exists():
+            return Response({
+                'message': 'Zaproszona osoba nie istnieje.',
+                'success': False
+            }, status=400)
+
+        if room.participants.filter(name=request.data['invitee']).exists():
+            return Response({
+                'message': 'Zaproszona osoba jest juz członkiem wybranego pokoju.',
+                'success': False
+            }, status=400)
+
+        if RoomInvite.objects.filter(room=room, invitee__name=request.data['invitee']).exists():
+            return Response({
+                'message': 'Dana osoba byla juz zaproszona do tego pokoju.',
+                'success': False
+            }, status=400)
+
+        room_invite = RoomInvite(
+            room=room,
+            invitee=invitee_qs.first()
+        )
+
+        room_invite.save()
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'user-{request.data["invitee"]}',
+            {"type": "fetch.invites"},
+        )
+
+        return Response({
+            'invite': RoomInviteSerializer(room_invite).data
+        })

@@ -15,6 +15,7 @@ router.register(r'v1/login', views.LoginViewSet, basename='v1/login')
 router.register(r'v1/login/verify', views.LoginVerifyViewSet, basename='v1/login/verify')
 router.register(r'v1/profile/rooms', views.ProfileRoomsViewSet, basename='v1/profile/rooms')
 router.register(r'v1/messages', views.MessagesViewSet, basename='v1/messages')
+router.register(r'v1/room/invite', views.RoomInviteViewSet, basename='v1/room/invite')
 
 urlpatterns = [
     path('', views.index, name='index'),

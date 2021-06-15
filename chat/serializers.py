@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Profile, Invite, Room, Message
+from .models import Profile, Invite, Room, Message, RoomInvite
 
 
 class DummySerializer(serializers.Serializer):
@@ -48,10 +48,20 @@ class RoomSerializer(serializers.ModelSerializer):
         fields = ('name', 'display_name', 'image')
 
 
+class RoomInviteSerializer(serializers.ModelSerializer):
+    room = serializers.StringRelatedField()
+    invitee = serializers.StringRelatedField()
+
+    class Meta:
+        model = RoomInvite
+        fields = ('room', 'invitee', 'id')
+
+
 class MessageSerializer(serializers.ModelSerializer):
     room = serializers.StringRelatedField()
     author = serializers.StringRelatedField()
     # TODO [#28]: Add profile images
+
     # # NOTE: Dirty hack simply to have the author_image in separate field
     # author_image = serializers.SlugRelatedField(slug_field='image', source='author', read_only=True)
     date = serializers.IntegerField()

@@ -1,7 +1,8 @@
 <template>
-  <router-view v-slot="{ Component, route }">
-    <transition :name="route.meta.transitionName" mode="out-in">
-      <component :is="Component" />
+  <error v-if="error" />
+  <router-view v-else v-slot="{ Component, route }">
+    <transition :name="route.meta.transitionName">
+      <component :is="Component" :key="route.path" />
     </transition>
   </router-view>
 
@@ -94,7 +95,8 @@ export default {
       cryptoPass,
       initCrypto,
       cryptoStorageInitialized: store.initialized,
-      loading
+      loading,
+      error: '__DJANGO_ERROR__' in window
     }
   }
 }

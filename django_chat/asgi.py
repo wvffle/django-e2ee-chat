@@ -1,8 +1,7 @@
 import os
 
 from channels.db import database_sync_to_async
-from channels.sessions import SessionMiddleware, CookieMiddleware
-from django.contrib.auth.models import AnonymousUser
+from channels.sessions import SessionMiddlewareStack
 
 import chat.routing
 
@@ -35,7 +34,7 @@ class QueryAuthMiddleware:
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    'websocket': CookieMiddleware(SessionMiddleware(
+    'websocket': SessionMiddlewareStack(
         URLRouter(chat.routing.websocket_urlpatterns),
-    )),
+    ),
 })

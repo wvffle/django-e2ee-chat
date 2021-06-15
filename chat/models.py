@@ -33,6 +33,15 @@ class Room(models.Model):
         return self.name
 
 
+class RoomInvite(models.Model):
+    id = models.AutoField(primary_key=True)
+    invitee = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.invitee.name} invited to {self.room.name}'
+
+
 class Message(models.Model):
     id = models.AutoField(primary_key=True)
     author = models.ForeignKey(Profile, on_delete=models.CASCADE)
