@@ -4,7 +4,6 @@ import { resolve } from 'path'
 import vue from '@vitejs/plugin-vue'
 import WindiCSS from 'vite-plugin-windicss'
 import liveReload from 'vite-plugin-live-reload'
-import svgLoader from 'vite-svg-loader'
 import ViteIcons, { ViteIconsResolver } from 'vite-plugin-icons'
 import ViteComponents from 'vite-plugin-components'
 
@@ -14,7 +13,6 @@ export default defineConfig(({
 
   plugins: [
     vue(),
-    svgLoader(),
     ViteComponents({
       dirs: [
         'chat/assets/components',
