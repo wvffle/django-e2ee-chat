@@ -263,3 +263,6 @@ chat/static/chat/*
 # Media files
 media/room_images/*
 !media/room_images/.gitkeep
+
+# Static files
+staticfiles/

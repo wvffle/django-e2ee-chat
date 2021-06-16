@@ -19,5 +19,6 @@ RUN apk add gcc g++ make libffi-dev openssl-dev python3-dev build-base linux-hea
 RUN pip install "poetry==1.0.0"
 RUN poetry install --no-dev --no-root
 RUN poetry run python manage.py migrate
+RUN poetry run python manage.py collectstatic
 
 CMD ["poetry", "run", "python", "manage.py", "runserver", "0.0.0.0:8080"]

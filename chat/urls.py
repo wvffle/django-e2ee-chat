@@ -5,7 +5,7 @@ from django.urls import path, include
 from rest_framework import routers
 from chat import views
 from django_chat import settings
-from django_chat.settings import DEBUG
+from django_chat.settings import DEV
 
 router = routers.DefaultRouter()
 router.register(r'v1/profiles', views.ProfileViewSet)
@@ -27,7 +27,7 @@ urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-if DEBUG:
+if DEV:
     from django.views.decorators.csrf import csrf_exempt
     from proxy.views import proxy_view
 

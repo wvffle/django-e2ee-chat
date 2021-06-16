@@ -10,7 +10,7 @@ from Crypto.Cipher import AES
 
 from chat.models import Profile, Message, Room, RoomInvite
 from chat.serializers import MessageSerializer, RoomInviteSerializer, RoomSerializer
-from django_chat.settings import DEBUG
+from django_chat.settings import DEV
 
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
@@ -86,7 +86,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             return await self.fetch_invites(None)
 
         # NOTE: In development mode, we echo the packets that are unknown to us
-        if DEBUG:
+        if DEV:
             await self.send(text_data=json.dumps(data))
 
     async def send_event(self, data):

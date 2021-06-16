@@ -25,7 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="&2zx2#121r7h-b%j-wx(8-p+^52nqslk1_lctu(wn1gz%##!h7")
 HCAPTCHA_SECRET = env("HCAPTCHA_SECRET", default="")
-DEBUG = env("DJANGO_ENV", default="production") == "development"
+# TODO: Make production set DEBUG = False
+DEBUG = True
+DEV = env("DJANGO_ENV", default="production") == "development"
 DEV_SERVER_ROOT = env("DEV_SERVER_ROOT", default="http://localhost:3001")
 
 ALLOWED_HOSTS = [
@@ -132,6 +134,7 @@ USE_TZ = True
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

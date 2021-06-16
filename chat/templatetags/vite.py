@@ -2,11 +2,10 @@ from os import path
 import re
 import json
 from django import template
-from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.templatetags.static import static
 
-from django_chat.settings import DEV_SERVER_ROOT
+from django_chat.settings import DEV_SERVER_ROOT, DEV
 
 
 def is_absolute_url(url):
@@ -14,8 +13,6 @@ def is_absolute_url(url):
 
 
 register = template.Library()
-
-DEV = settings.DEBUG
 
 
 def vite_manifest(entries_names):
@@ -45,7 +42,9 @@ def vite_manifest(entries_names):
                 if name in _processed:
                     continue
 
-                chunk = manifest[name]
+                # chunk = manifest[name]
+                key = f'chat/assets/{name}'
+                chunk = manifest[key] if key in manifest else manifest[name]
 
                 import_scripts, import_styles = _process_entries(chunk.get('imports', []))
                 scripts += import_scripts
