@@ -2,15 +2,17 @@ version: '3'
 
 services:
   e2ee-dev:
-    image: nikolaik/python-nodejs:python3.9-nodejs16-alpine
-    working_dir: /app
-    entrypoint: ./development.sh
+#    image: nikolaik/python-nodejs:python3.9-nodejs16-alpine
+#    working_dir: /app
+#    entrypoint: ./development.sh
+    build: .
     restart: always
     tty: true
-    environment:
-      - NODE_ENV=development
-      - DJANGO_ENV=development
+#    environment:
+#      - NODE_ENV=development
+#      - DJANGO_ENV=development
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .env:/app/.env
+#      - .:/app
+#      - /app/node_modules
     network_mode: host

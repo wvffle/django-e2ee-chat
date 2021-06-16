@@ -13,13 +13,21 @@ export default defineConfig(({
 
   plugins: [
     vue(),
+    {
+      name: 'vue2-undraw-compat',
+      transform (code, id) {
+        if (id.includes('vue2')) {
+          return code.replace(/(import .+?)"vue"$/gm, '$1"../../../vue"')
+        }
+      }
+    },
     ViteComponents({
       dirs: [
         'chat/assets/components',
         'chat/public',
       ],
 
-      extensions: ['vue', 'svg'],
+      extensions: ['vue'],
       customComponentResolvers: [
         ViteIconsResolver(),
         name => {
