@@ -1,9 +1,12 @@
 import asyncio
+import base64
 import json
 
+from Crypto.Util.Padding import pad, unpad
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from Crypto.Cipher import AES
 
 from chat.models import Profile, Message, Room, RoomInvite
 from chat.serializers import MessageSerializer, RoomInviteSerializer, RoomSerializer
@@ -22,11 +25,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
 
-        print(data)
         msg_type = data['type']
         if msg_type == 'login':
-            # TODO [#33]: Check if user is authenticated
-            await self.set_user(data['name'])
+            if not await self.set_user(data['name']):
+                return
 
             rooms, invites = await asyncio.gather(
                 self.get_rooms(),
@@ -46,8 +48,11 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                     self.channel_layer.group_add(f'room-{room["name"]}', self.channel_name)
                     for room in rooms
                 ],
-                self.channel_layer.group_add(f'user-{data["name"]}', self.channel_name),
+                self.channel_layer.group_add(f'user-{self.user.name}', self.channel_name),
             )
+
+        if self.user is None:
+            return
 
         if msg_type == 'room.f':
             return await self.send(text_data=json.dumps({
@@ -70,7 +75,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
                         'name': self.user.name,
                         'publicKey': self.user.public_key,
                     }
-                 },
+                },
             )
 
             await self.subscribe_room({'data': {'name': room.name}})
@@ -124,16 +129,30 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def set_user(self, name):
+        self.user = None
         sess_name = self.scope['session']['name']
-        if sess_name != name:
-            async_to_sync(self.channel_layer.group_send)(
-                f'user-{sess_name}',
-                {'type': 'logout'},
-            )
 
-        self.user = Profile.objects.get(name=name)
-        self.scope['session']['name'] = name
-        self.scope['session']['profile_id'] = self.user.id
+        try:
+            session_key = base64.b64decode(self.scope['session']['sessionKey'].encode('utf-8'))
+            iv = base64.b64decode(self.scope['session']['sessionIv'].encode('utf-8'))
+
+            cipher_aes = AES.new(session_key, AES.MODE_CBC, iv)
+            name = cipher_aes.decrypt(base64.b64decode(name))
+            name = unpad(name, AES.block_size).decode('utf-8')
+
+            if sess_name != name:
+                async_to_sync(self.channel_layer.group_send)(
+                    f'user-{sess_name}',
+                    {'type': 'logout'},
+                )
+
+            self.user = Profile.objects.get(name=name)
+            self.scope['session']['name'] = name
+            self.scope['session']['profile_id'] = self.user.id
+            return True
+
+        except:
+            return False
 
     @database_sync_to_async
     def get_rooms(self):

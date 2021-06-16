@@ -117,6 +117,10 @@ export default function useCryptoStore() {
   }
 
   const encryptAES = async (key, iv, data) => {
+    if (key instanceof ArrayBuffer) {
+      key = await crypto.subtle.importKey("raw", key, "AES-CBC", false, ['encrypt'])
+    }
+
     const buf = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, encoder.encode(data))
     return abtb64(buf)
   }

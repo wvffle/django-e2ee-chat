@@ -102,11 +102,6 @@ class RegisterViewSet(viewsets.GenericViewSet):
 class LoginViewSet(viewsets.GenericViewSet):
     serializer_class = LoginSerializer
 
-    def get(self, request, pk=None):
-        return Response({
-            'name': base58.random(8),
-        })
-
     def create(self, request, pk=None):
         if 'name' not in request.data or request.data['name'] == '':
             return Response({
@@ -142,6 +137,9 @@ class LoginViewSet(viewsets.GenericViewSet):
 
         cipher_aes = AES.new(session_key, AES.MODE_CBC)
         ct_bytes = cipher_aes.encrypt(pad(auth_key.encode("utf-8"), AES.block_size))
+
+        request.session['sessionKey'] = base64.b64encode(session_key).decode('utf-8')
+        request.session['sessionIv'] = base64.b64encode(cipher_aes.iv).decode('utf-8')
 
         request.session['name'] = request.data['name']
         request.session['authenticated'] = False

@@ -22,12 +22,13 @@
         <template v-if="profile.lastRooms.length">
           <h2 class="text-lg px-4 pt-4 pb-2 text-gray-400 uppercase text-xs">Ostatnie pokoje</h2>
 
-          <div class="max-w-full px-4 flex overflow-x-auto py-2">
+          <transition-group name="flip-list" tag="div" class="max-w-full px-4 flex overflow-x-auto py-2">
+            <!-- TODO: Scroll left on select -->
             <div v-tooltip="room?.display_name" @click="select(room)" :key="room.name" v-for="room in profile.lastRooms" class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative cursor-pointer mr-2 overflow-hidden">
               {{ room?.display_name?.slice(0, 2) }}
               <img class="absolute inset-0 block object-cover w-full h-full" :src="room.image" />
             </div>
-          </div>
+          </transition-group>
         </template>
       </div>
 
@@ -90,7 +91,7 @@
           </div>
 
           <div v-else class="px-20">
-            <div v-for="message of selectedRoom?.messages" class="flex mb-2 max-w-full">
+            <div v-for="message of selectedRoom?.messages" :key="message.id" class="flex mb-2 max-w-full">
               <div v-if="message.type === 'message'" class="mr-auto relative">
                 <div class="absolute top-1/2 transform -translate-y-2/3 -translate-x-14">
                   <div v-tooltip="message.author + ', ' + message.date.toLocaleTimeString('pl')" :class="message.author === profile.name ? 'bg-pink-500' : 'bg-blue-300'" class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative">
@@ -104,8 +105,8 @@
                 </div>
               </div>
               <pre v-else>
-              {{ message }}
-            </pre>
+                {{ message }}
+              </pre>
             </div>
           </div>
         </div>
@@ -124,9 +125,11 @@
       </div>
 
       <h2 class="text-lg px-4 pt-4 text-gray-400 uppercase text-xs">Czlonkowie</h2>
-      <div v-for="participant of selectedRoom.participants" :key="participant.name" class="p-4 text-sm border-b border-gray-200">
-        {{ participant.name }}
-      </div>
+      <staggering-list-transition>
+        <div v-for="participant of selectedRoom.participants" :key="participant.name" class="p-4 text-sm border-b border-gray-200">
+          {{ participant.name }}
+        </div>
+      </staggering-list-transition>
       <div class="flex justify-center pt-4">
         <waff-button @click="invitingNewPerson = true">
           Zaproś
@@ -179,6 +182,7 @@ import { reactive, ref, nextTick, computed } from 'vue'
 import useCryptoStore, { abtb64, b64tab } from '../utils/cryptoStore'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 import axios from 'axios'
+import { isLogged, state } from '../utils/api'
 
 export default {
   name: 'Index',
@@ -204,7 +208,9 @@ export default {
     })
 
     const filteredRooms = computed(() => {
-      const rooms = Object.values(profile.rooms)
+      const rooms = Object.values(profile.rooms).sort((a, b) => {
+        return (b.lastMessage.date || b.dateAdded) - (a.lastMessage.date || a.dateAdded)
+      })
       if (searchTerm.value) {
         return rooms.filter(room => room.display_name.toLowerCase().includes(searchTerm.value.toLowerCase()))
       }
@@ -255,12 +261,11 @@ export default {
     const rws = new ReconnectingWebSocket(`wss://${location.hostname}/ws/chat/test`)
     rws.addEventListener('open', async () => {
       profile.name = await store.get('name')
+      await isLogged
 
       if (await store.get('publicKey')) {
-        rws.send(JSON.stringify({
-          type: 'login',
-          name: profile.name
-        }))
+        const name = await store.encryptAES(state.sessionKey, state.sessionIv, profile.name)
+        rws.send(JSON.stringify({ type: 'login', name }))
       }
     })
 
@@ -279,7 +284,10 @@ export default {
           const rooms = await Promise.all(data.rooms.map(room => (async () => ({
             ...room,
             lastMessage: await decryptEvent(room.last_message),
-            messages: []
+            messages: [],
+            dateAdded: room.name in profile.rooms
+                ? profile.rooms[room.name].dateAdded
+                : new Date(),
           }))()))
 
           for (const room of rooms) {
