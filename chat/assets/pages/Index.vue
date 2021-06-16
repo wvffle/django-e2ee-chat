@@ -23,7 +23,7 @@
           <h2 class="text-lg px-4 pt-4 pb-2 text-gray-400 uppercase text-xs">Ostatnie pokoje</h2>
 
           <transition-group name="flip-list" tag="div" class="max-w-full px-4 flex overflow-x-auto py-2">
-            <!-- TODO [$60c9e81918541b06f8081b13]: Scroll left on select -->
+            <!-- TODO [#34]: Scroll left on select -->
             <div v-tooltip="room?.display_name" @click="select(room)" :key="room.name" v-for="room in profile.lastRooms" class="w-8 h-8 rounded-full bg-pink-500 flex-shrink-0 flex items-center justify-center text-white text-xs uppercase relative cursor-pointer mr-2 overflow-hidden">
               {{ room?.display_name?.slice(0, 2) }}
               <img class="absolute inset-0 block object-cover w-full h-full" :src="room.image" />
