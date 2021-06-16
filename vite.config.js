@@ -19,7 +19,7 @@ export default defineConfig(({ command, mode }) => {
       {
         name: 'vue2-undraw-compat',
         transform (code, id) {
-          if (id.includes('vue2')) {
+          if (id.includes('vue2-undraw')) {
             return code.replace(/(import .+?)"vue"$/gm, '$1"../../../vue"')
           }
         }
@@ -40,7 +40,7 @@ export default defineConfig(({ command, mode }) => {
       }),
       WindiCSS({
         scan: {
-          dirs: ['chat/assets', 'chat/templates', 'chat/public']
+          dirs: ['chat']
         }
       }),
       liveReload('./**/*.py'),
