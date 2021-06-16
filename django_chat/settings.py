@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="&2zx2#121r7h-b%j-wx(8-p+^52nqslk1_lctu(wn1gz%##!h7")
 HCAPTCHA_SECRET = env("HCAPTCHA_SECRET", default="")
-# TODO: Make production set DEBUG = False
+# TODO [$60ca1af42337ac06f73021a4]: Make production set DEBUG = False
 DEBUG = True
 DEV = env("DJANGO_ENV", default="production") == "development"
 DEV_SERVER_ROOT = env("DEV_SERVER_ROOT", default="http://localhost:3001")
