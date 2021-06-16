@@ -3,7 +3,7 @@ import collections
 import itertools
 import json
 
-from Crypto.Util.Padding import pad
+from Crypto.Util.Padding import pad, unpad
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.core.cache import cache
@@ -136,18 +136,31 @@ class LoginViewSet(viewsets.GenericViewSet):
         request.session['auth_key'] = auth_key
 
         cipher_aes = AES.new(session_key, AES.MODE_CBC)
-        ct_bytes = cipher_aes.encrypt(pad(auth_key.encode("utf-8"), AES.block_size))
+        ct_auth_key = cipher_aes.encrypt(pad(auth_key.encode("utf-8"), AES.block_size))
+
+        enc_iv = cipher_rsa.encrypt(cipher_aes.iv)
 
         request.session['sessionKey'] = base64.b64encode(session_key).decode('utf-8')
         request.session['sessionIv'] = base64.b64encode(cipher_aes.iv).decode('utf-8')
+
+        verify_key = get_random_bytes(32)
+        cipher_verify = AES.new(session_key, AES.MODE_CBC)
+
+        request.session['verifyKey'] = base64.b64encode(verify_key).decode('utf-8')
+        request.session['verifyIv'] = base64.b64encode(cipher_verify.iv).decode('utf-8')
+
+        enc_verify_key = cipher_rsa.encrypt(verify_key)
+        enc_verify_iv = cipher_rsa.encrypt(cipher_verify.iv)
 
         request.session['name'] = request.data['name']
         request.session['authenticated'] = False
 
         return Response({
             'sessionKey': base64.b64encode(enc_session_key),
-            'authKey': base64.b64encode(ct_bytes),
-            'iv': base64.b64encode(cipher_aes.iv),
+            'authKey': base64.b64encode(ct_auth_key),
+            'iv': base64.b64encode(enc_iv),
+            'verifyKey': base64.b64encode(enc_verify_key),
+            'verifyIv': base64.b64encode(enc_verify_iv),
             'success': True,
         })
 
@@ -172,7 +185,15 @@ class LoginVerifyViewSet(viewsets.GenericViewSet):
                 'success': False
             }, status=400)
 
-        if request.data['authKey'] != request.session['auth_key']:
+        auth_key = request.data['authKey']
+        key = base64.b64decode(request.session['verifyKey'].encode('utf-8'))
+        iv = base64.b64decode(request.session['verifyIv'].encode('utf-8'))
+
+        cipher_aes = AES.new(key, AES.MODE_CBC, iv)
+        auth_key = cipher_aes.decrypt(base64.b64decode(auth_key))
+        auth_key = unpad(auth_key, AES.block_size).decode('utf-8')
+
+        if auth_key != request.session['auth_key']:
             return Response({
                 'message': 'Nie podano klucza autentykacyjnego.',
                 'success': False
@@ -181,6 +202,7 @@ class LoginVerifyViewSet(viewsets.GenericViewSet):
         profile = Profile.objects.filter(name=request.session['name']).first()
         request.session['profile_id'] = profile.id
         request.session['authenticated'] = True
+
         return Response({
             'success': True
         }, status=200)

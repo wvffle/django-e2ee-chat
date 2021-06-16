@@ -1,5 +1,5 @@
 import axios from 'axios'
-import useCryptoStore, { b64tab } from './cryptoStore'
+import useCryptoStore, { abtb64, b64tab } from './cryptoStore'
 import { useToast } from 'vue-toastification'
 import resolvable from '@josephg/resolvable'
 
@@ -51,12 +51,17 @@ export const useAPI = () => {
       return false
     }
 
-    const sessionKey = await store.decryptPKI(b64tab(res.sessionKey))
-    // TODO [#19]: Decrypt iv with PKI
-    const authKey = await store.decryptAES(sessionKey, b64tab(res.iv), b64tab(res.authKey))
+    const [sessionKey, iv, verifyKey, verifyIv] = await Promise.all([
+      store.decryptPKI(b64tab(res.sessionKey)),
+      store.decryptPKI(b64tab(res.iv)),
+      store.decryptPKI(b64tab(res.verifyKey)),
+      store.decryptPKI(b64tab(res.verifyIv))
+    ])
 
-    // TODO [#22]: Encrypt authKey with PKI
-    const { data } = await axios.post('/api/v1/login/verify/', { authKey })
+    const authKey = await store.decryptAES(sessionKey, iv, b64tab(res.authKey))
+    const encAuthKey = await store.encryptAES(verifyKey, verifyIv, authKey)
+
+    const { data } = await axios.post('/api/v1/login/verify/', { authKey: encAuthKey })
       .catch(err => err.response)
 
     if (!data.success) {
@@ -66,7 +71,7 @@ export const useAPI = () => {
     }
 
     state.sessionKey = sessionKey
-    state.sessionIv = b64tab(res.iv)
+    state.sessionIv = iv
     state.loggedIn = true
     isLogged.resolve()
     return true
