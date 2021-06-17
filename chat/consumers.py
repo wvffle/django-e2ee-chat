@@ -130,6 +130,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def set_user(self, name):
         self.user = None
+
+        if 'name' not in self.scope['session']:
+            return False
+
         sess_name = self.scope['session']['name']
 
         try:
