@@ -12,7 +12,7 @@ export default defineConfig(({ command, mode }) => {
     publicDir: 'chat/public',
     base: command === 'serve'
       ? 'https://3001.local.dev/'
-      : undefined,
+      : '/static/',
 
     plugins: [
       vue(),
@@ -39,8 +39,9 @@ export default defineConfig(({ command, mode }) => {
         ]
       }),
       WindiCSS({
+        transformCSS: 'pre',
         scan: {
-          dirs: ['chat']
+          include: ['chat/**/*.{vue,html,js}'],
         }
       }),
       liveReload('./**/*.py'),

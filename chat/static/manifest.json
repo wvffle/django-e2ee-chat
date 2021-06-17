@@ -1,10 +1,10 @@
 {
   "chat/assets/main.js": {
-    "file": "chat/main.90599b4b.js",
+    "file": "chat/main.bc776589.js",
     "src": "chat/assets/main.js",
     "isEntry": true,
     "imports": [
-      "_vendor.76411339.js"
+      "_vendor.e9352376.js"
     ],
     "dynamicImports": [
       "chat/assets/pages/Index.vue",
@@ -14,15 +14,15 @@
       "chat/main.f340fd44.css"
     ]
   },
-  "_vendor.76411339.js": {
-    "file": "chat/vendor.76411339.js"
+  "_vendor.e9352376.js": {
+    "file": "chat/vendor.e9352376.js"
   },
   "chat/assets/pages/Index.vue": {
-    "file": "chat/Index.e3677a38.js",
+    "file": "chat/Index.31fe4d9d.js",
     "src": "chat/assets/pages/Index.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_vendor.76411339.js",
+      "_vendor.e9352376.js",
       "chat/assets/main.js"
     ],
     "css": [
@@ -30,11 +30,11 @@
     ]
   },
   "chat/assets/pages/Register.vue": {
-    "file": "chat/Register.aa78f5c4.js",
+    "file": "chat/Register.d6ce5697.js",
     "src": "chat/assets/pages/Register.vue",
     "isDynamicEntry": true,
     "imports": [
-      "_vendor.76411339.js",
+      "_vendor.e9352376.js",
       "chat/assets/main.js"
     ]
   }

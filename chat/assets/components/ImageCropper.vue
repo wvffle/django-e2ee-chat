@@ -16,29 +16,29 @@
         <slot></slot>
       </div>
 
-      <cropper
-          ref="cropper"
-          v-else
-          :src="image.src"
-          :auto-zoom="false"
-          :default-size="{ width: 68, height: 68 }"
-          :canvas="{ width: 68, height: 68 }"
-          :stencil-size="{ width: 68, height: 68 }"
-          :stencil-component="$options.components.CircleStencil"
-          :stencil-props="{
-            handlers: {},
-            movable: false,
-            scalable: false,
-            aspectRatio: 1,
-          }"
-          :resize-image="{
-            adjustStencil: false
-          }"
+      <div v-else class="h-16 w-16">
+        <cropper
+            ref="cropper"
+            :src="image.src"
+            :auto-zoom="false"
+            :resize-image="{ adjustStencil: false }"
+            :default-size="{ width: 68, height: 68 }"
+            :canvas="{ width: 68, height: 68 }"
+            :stencil-size="{ width: 68, height: 68 }"
+            :stencil-component="$options.components.CircleStencil"
+            :stencil-props="{
+              handlers: {},
+              movable: false,
+              scalable: false,
+              aspectRatio: 1,
+            }"
 
-          @ready="resetZoom"
-          image-restriction="stencil"
-          class="h-16 w-16"
-      />
+
+            @ready="resetZoom"
+            image-restriction="stencil"
+            class="h-16 w-16"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -122,6 +122,10 @@ export default {
         reader.onload = async ({ target }) => {
           image.src = URL.createObjectURL(file)
           image.type = getMimeType(target.result, file.type)
+
+          await nextTick()
+
+          cropper.value.refresh()
         }
 
         reader.readAsArrayBuffer(file)
